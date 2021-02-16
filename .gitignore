@@ -126,3 +126,5 @@ dmypy.json
 Scripts/
 
 pyvenv.cfg
+
+prisudice.py
