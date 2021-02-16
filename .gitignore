@@ -128,3 +128,5 @@ Scripts/
 pyvenv.cfg
 
 prisudice.py
+
+.vscode/

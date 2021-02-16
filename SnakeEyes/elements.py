@@ -4,15 +4,25 @@ import logging
 
 logger = logging.getLogger('dice.elements')
 
-class StringCompiler():
-    parsestring = None
-    
 
-class DiceString(StringCompiler):
+class DiceString():
     """
         Generates the dice string to put through the system
+
+        Attributes
+        ----------
+        parsestring : Pattern
+            Regex pattern to detect the various attributes of a dice roll
+
+        quantity : int
+            Number of times die must be rolled
+
+        sides : int
+            Number of sides a die has
+
     """
     parsestring = re.compile(r"(?P<quantity>\d*(?=d\d*))d(?P<sides>\d*)")
+
     def __init__(self, string):
         logger.debug("Initating DiceString")
         dice = self.parsestring.search(string)
@@ -20,48 +30,49 @@ class DiceString(StringCompiler):
         self.sides = dice.group("sides")
 
 
+class Operator():
+    """
+    Handles creating operators for use in rolls
+
+    ...
+
+    Attributes
+    ----------
+    char : str
+        character for operand
+    regex : str
+        raw string, by default just detects the character
+
+    Functions
+    -------
+    parse
+
+    """
+    char = None
+    regex = rf"{char}"
+    compiled = re.compile(regex)
+
+    def parse(self, string):
+        """
+        Take a string and output its operator and operands
+        """
+        pass
+
 
 class Roll():
     """
     Class that handles dice rolls using the rand function and regular expressions
 
-        ...
+    ...
 
-        Attributes
-        ----------
-        string : str
-            String to be processed
+    Attributes
+    ----------
+    string : str
+        String to be processed
 
     """
-
-
 
     def __init__(self, string: str):
-        logger.info("Roll Created!")
         self.string = string
-        logger.info("Roll string" + str(self.string))
-        mathstring = self.mathparse.findall(string)
-        tempstring = ""
-        for m in mathstring:
-            tempstring = tempstring + str(m)
-        self.mathstring = tempstring
-        self.opstring = self.opparse.search(string)
-
-class Operator():
-    """
-    Handles creating operators for use in rolls
-    """
-    char: str = None    
-    def __init__(self, roll: Roll):
-        self.roll = roll
-
-    def operate(self, parse):
-        pass
-
-    def parse(self, char):
-        operator = re.compile(rf"{char}")
-        operator.search(self.roll.opstring)
-
-
-
-    
+        self.dice = DiceString(string)
+        self.remainder = re.search(r"[^\dd].*", string)
