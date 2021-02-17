@@ -115,13 +115,26 @@ class Successes(LeftHandOperator):
     """
     char = r">"
 
-    def evaluate(self, opstring, dice: list):
+    def evaluate(self, opstring, results: list):
         dice_dict = {}
         logger.debug("Evaluating successes!")
         i = 0
-        for d in dice:
+        for d in results:
             if d >= int(self.parse(opstring)['operand']):
                 dice_dict[i] = True
             else:
                 dice_dict[i] = False
             i += 1
+
+class Exploding(LeftHandOperator):
+    """
+    Takes an operand of explode threshold, and adds another die whenever the roll threshold is passed
+    """
+
+    char = r"x"
+
+    def evaluate(self, die: Die, opstring: str, results: list):
+        for d in results:
+            if d >= int(self.parse(opstring)['operand']):
+                # Roll another die, then check again if it is above operand, repeat until false
+                pass
