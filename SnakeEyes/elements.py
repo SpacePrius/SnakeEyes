@@ -1,10 +1,10 @@
-"""Handles the Grammar of the document"""
 import re
 import logging
 import random
 import math
-logger = logging.getLogger('dice.elements')
+logger = logging.getLogger('snakeeyes.elements')
 
+"""Handles the Grammar of the document"""
 
 class DiceString():
     """
@@ -23,32 +23,48 @@ class DiceString():
 
     """
     parsestring = re.compile(r"(?P<quantity>\d*(?=d\d*))d(?P<sides>\d*)")
+    sides = 0
+    quantity = 0
 
     def __init__(self, string):
         logger.debug("Initating DiceString")
-        dice = self.parsestring.search(string)
-        self.quantity = dice.group("quantity")
-        self.sides = dice.group("sides")
+        self.__dice = self.parsestring.search(string)
+        try:
+            self.quantity = int(self.__dice.group("quantity"))
+            self.sides = int(self.__dice.group("sides"))
+            logger.debug("Sides: " + str(self.sides) + "Quantity: " + str(self.quantity))
+        except ValueError:
+            pass
+
+    def __bool__(self):
+        if self.__dice:
+            return True
+        else:
+            False
 
 
 class Die():
-    """
-    Class that handles dice rolls using the rand function and regular expressions
-
-    ...
+    """Class that handles dice rolls using the rand function and regular expressions
 
     Attributes
     ----------
     string : str
         String to be processed
-
+    dice : DiceString
+        Processed dicestring
     """
-    opparse = re.compile(r"([^\dd]\d*)")
+    opparse = re.compile(r"(?P<operator>[^\dd\(\)])(?P<operand>\d*)")
 
     def __init__(self, string: str):
         self.string = string
+        logger.debug("String: " + self.string)
         self.dice = DiceString(string)
         self.oplist = self.opparse.findall(string)
+        self.operators = []
+        for o in self.oplist:
+            self.operators.append(o.groupdict["operator"])
+            
+        logger.debug(str(self.operators))
 
 
 class Operator():
@@ -71,19 +87,18 @@ class Operator():
 
     """
     char = r""
-    regex = rf"[{char}]"
+    regex = rf"(?P<operator>[{char}])"
 
-    def __init__(self):
-        pass
-
-    def parse(self, string):
+    @classmethod
+    def parse(cls, string):
         """
         Take a string and output its operator and operands
         """
-        compiled = re.compile(self.regex)
-        return compiled.search(string).group
+        compiled = re.compile(cls.regex)
+        return compiled.search(string).groupdict()
 
-    def evaluate(self, dice):
+    @classmethod
+    def evaluate(cls, dice):
         pass
 
 
@@ -97,14 +112,13 @@ class LeftHandOperator(Operator):
         The arguments taken by the operator
 
     """
+    char = Operator.char
     operand = r"\d*"
+    regex = rf"(?P<operator>[{char}])(?P<operand>{operand})"
 
-    def __init__(self):
-        Operator.__init__(self)
-        self.regex = rf"(?P<operator>[{self.char}])(?P<operand>{self.operand})"
-
-    def parse(self, string):
-        compiled = re.compile(self.regex)
+    @classmethod
+    def parse(cls, string):
+        compiled = re.compile(cls.regex)
         return compiled.search(string).groupdict()
 
 
@@ -113,28 +127,32 @@ class Successes(LeftHandOperator):
     """
     Takes an operand and calculates how many successes there have been
     """
-    char = r">"
+    char = r"\>"
 
-    def evaluate(self, opstring, results: list):
-        dice_dict = {}
+    @classmethod
+    def evaluate(cls, roll, opstring):
+        dice_list = []
         logger.debug("Evaluating successes!")
-        i = 0
-        for d in results:
-            if d >= int(self.parse(opstring)['operand']):
-                dice_dict[i] = True
+        for d in roll.results:
+            if d >= int(cls.parse(opstring)['operand']):
+                dice_list.append((d, True))
             else:
-                dice_dict[i] = False
-            i += 1
+                dice_list.append((d, False))
+
+        return dice_list
+
 
 class Exploding(LeftHandOperator):
-    """
-    Takes an operand of explode threshold, and adds another die whenever the roll threshold is passed
-    """
 
     char = r"x"
 
-    def evaluate(self, die: Die, opstring: str, results: list):
-        for d in results:
-            if d >= int(self.parse(opstring)['operand']):
-                # Roll another die, then check again if it is above operand, repeat until false
-                pass
+    @classmethod
+    def evaluate(cls, roll, opstring: str,):
+        eval_results = roll.results
+        for d in roll.results:
+            r = d
+            while r >= int(cls.parse(opstring)['operand']):
+                temp_roll = math.ceil(random.random() * roll.die.dice.sides)
+                r = temp_roll
+                eval_results.append(r)
+        roll.results = eval_results
