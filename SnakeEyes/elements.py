@@ -6,6 +6,7 @@ logger = logging.getLogger('snakeeyes.elements')
 
 """Handles the Grammar of the document"""
 
+
 class DiceString():
     """
         Generates the dice string to put through the system
@@ -32,7 +33,8 @@ class DiceString():
         try:
             self.quantity = int(self.__dice.group("quantity"))
             self.sides = int(self.__dice.group("sides"))
-            logger.debug("Sides: " + str(self.sides) + "Quantity: " + str(self.quantity))
+            logger.debug("Sides: " + str(self.sides) +
+                         "Quantity: " + str(self.quantity))
         except ValueError:
             pass
 
@@ -60,10 +62,8 @@ class Die():
         logger.debug("String: " + self.string)
         self.dice = DiceString(string)
         self.oplist = self.opparse.findall(string)
-        self.operators = []
-        for o in self.oplist:
-            self.operators.append(o.groupdict["operator"])
-            
+        self.operators = self.oplist
+
         logger.debug(str(self.operators))
 
 
@@ -86,6 +86,7 @@ class Operator():
     evaluate - Blank method where the operator is processed
 
     """
+    priority = 0
     char = r""
     regex = rf"(?P<operator>[{char}])"
 
@@ -127,14 +128,15 @@ class Successes(LeftHandOperator):
     """
     Takes an operand and calculates how many successes there have been
     """
+    priority = 7
     char = r"\>"
 
     @classmethod
-    def evaluate(cls, roll, opstring):
+    def evaluate(cls, results, operand, roll):
         dice_list = []
         logger.debug("Evaluating successes!")
-        for d in roll.results:
-            if d >= int(cls.parse(opstring)['operand']):
+        for d in results:
+            if d > operand:
                 dice_list.append((d, True))
             else:
                 dice_list.append((d, False))
@@ -143,16 +145,17 @@ class Successes(LeftHandOperator):
 
 
 class Exploding(LeftHandOperator):
-
+    priority = 1
     char = r"x"
 
     @classmethod
-    def evaluate(cls, roll, opstring: str,):
-        eval_results = roll.results
-        for d in roll.results:
+    def evaluate(cls, results, operand, roll):
+        eval_results = results
+        log.debug("Evaluating Exploding!")
+        for d in results:
             r = d
-            while r >= int(cls.parse(opstring)['operand']):
+            while r >= operand:
                 temp_roll = math.ceil(random.random() * roll.die.dice.sides)
                 r = temp_roll
                 eval_results.append(r)
-        roll.results = eval_results
+        return eval_results

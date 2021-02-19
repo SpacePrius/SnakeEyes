@@ -1,4 +1,4 @@
-from dicelogic import Roll
+from dice_logic import Roll
 import logging
 
 logging.basicConfig(level=logging.DEBUG)

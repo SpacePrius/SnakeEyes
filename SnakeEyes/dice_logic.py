@@ -4,9 +4,16 @@ import random
 import re
 import logging
 
-from elements import Die, Exploding, Successes
+from elements import Die, Exploding, Operator, Successes
 
 logging.getLogger('snakeeyes.dicelogic')
+
+op_dict = {
+    ">": Successes,
+    "x": Exploding,
+}
+
+
 class Roll():
     """A class which takes a string and outputs a dice roll
 
@@ -32,6 +39,7 @@ class Roll():
     -------
     roll
     """
+
     dice_regex = re.compile(r"\d*d\d*(?:[^d\d\(\)+\-\*/]\d*)*")
 
     def roll(self, die: Die):
@@ -44,8 +52,27 @@ class Roll():
             dice_total += r
         return (dice_array, dice_total)
 
-    __op_queue = []
-    op_results = []
+    def op_collection(die: Die):
+        """Take die object and return list of operator classes"""
+        ops = []
+        for o in die.operators:
+            try:
+                operator = op_dict[o[0]]
+                op = o
+                op[0] = operator
+                ops.append(o)
+            except KeyError:
+                continue
+            return ops
+        
+    def op_evaluate(self, ops: list[tuple]):
+        """Take results and operators and return a final result"""
+        ops = sorted(ops, key=lambda op: op[0].priority)
+        last_output = self.results
+        for o in ops:
+            last_output = o[0].evaluate(last_output, o[1], self)
+        return last_output
+
 
     def __init__(self, string: str):
         self.string = string
@@ -54,19 +81,17 @@ class Roll():
         self.results = roll[0]
         self.total = roll[1]
         self.result_string = self.dice_regex.sub(f"{self.total}", string)
-        self.eval_string = None 
-        op_dict = {
-            ">": Successes,
-            "x": Exploding,
-        }
-        for o in self.die.operators:
-            try:
-                self.__op_queue.append(op_dict[o])
-            except KeyError:
-                continue
+        __op_queue = self.op_collection(self.die)
+        if __op_queue:
+            self.operator = True
+            self.final = self.op_evaluate(__op_queue)
+        else:
+            self.final = self.result_string
+
+
         for o in self.__op_queue:
             try:
-                # Fix this later, opstring needs to be completely reworked. 
+                # Fix this later, opstring needs to be completely reworked.
                 # My head hurts atm and I need to get this crap fixed
                 self.op_results.append(op_dict[o].evaluate(self, self.string))
             except KeyError:
