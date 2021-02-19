@@ -159,7 +159,7 @@ class Exploding(LeftHandOperator):
         eval_results = results
         logger.debug("Evaluating Exploding!")
         for d in results:
-            r = d
+            r = int(d)
             while r >= int(operand):
                 temp_roll = math.ceil(random.random() * roll.die.dice.sides)
                 r = temp_roll

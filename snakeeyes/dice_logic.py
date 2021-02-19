@@ -4,7 +4,7 @@ import random
 import re
 import logging
 
-from elements import Die, Exploding, Operator, Successes
+from .elements import Die, Exploding, Operator, Successes
 
 logging.getLogger('snakeeyes.dicelogic')
 
