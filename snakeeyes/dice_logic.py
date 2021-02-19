@@ -41,6 +41,7 @@ class Roll():
     """
 
     dice_regex = re.compile(r"\d*d\d*(?:[^d\d\(\)+\-\*/]\d*)*")
+    math_regex = re.compile(r"[\(\)+*-\/\d]+")
 
     def roll(self, die: Die):
         """Takes Die object and returns a tuple containing a list of results, and a total of of all rolls."""
@@ -52,15 +53,14 @@ class Roll():
             dice_total += r
         return (dice_array, dice_total)
 
-    def op_collection(die: Die):
+    def op_collection(self, die: Die):
         """Take die object and return list of operator classes"""
         ops = []
         for o in die.operators:
             try:
                 operator = op_dict[o[0]]
-                op = o
-                op[0] = operator
-                ops.append(o)
+                op = (operator, o[1])
+                ops.append(op)
             except KeyError:
                 continue
             return ops
@@ -76,23 +76,20 @@ class Roll():
 
     def __init__(self, string: str):
         self.string = string
-        self.die = Die(string)
-        roll = self.roll(self.die)
-        self.results = roll[0]
-        self.total = roll[1]
-        self.result_string = self.dice_regex.sub(f"{self.total}", string)
-        __op_queue = self.op_collection(self.die)
-        if __op_queue:
-            self.operator = True
-            self.final = self.op_evaluate(__op_queue)
-        else:
-            self.final = self.result_string
-
-
-        for o in self.__op_queue:
-            try:
-                # Fix this later, opstring needs to be completely reworked.
-                # My head hurts atm and I need to get this crap fixed
-                self.op_results.append(op_dict[o].evaluate(self, self.string))
-            except KeyError:
-                continue
+        try:
+            self.die = Die(self.string)
+            if self.die:
+                roll = self.roll(self.die)
+                self.results = roll[0]
+                self.total = roll[1]
+                self.result_string = self.dice_regex.sub(f"{self.total}", string)
+                op_queue = self.op_collection(self.die)
+                if op_queue:
+                    self.operator = True
+                    self.final = self.op_evaluate(op_queue)
+                else:
+                    self.result_string = self.math_regex.search(self.string).group                
+                    self.final = self.result_string
+        except AttributeError:
+            self.result_string = self.math_regex.search(self.string).group
+            self.final = eval(self.result_string)

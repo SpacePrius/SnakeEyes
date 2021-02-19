@@ -7,7 +7,7 @@ logger = logging.getLogger('snakeeyes.elements')
 """Handles the Grammar of the document"""
 
 
-class DiceString():
+class DiceString(object):
     """
         Generates the dice string to put through the system
 
@@ -35,17 +35,17 @@ class DiceString():
             self.sides = int(self.__dice.group("sides"))
             logger.debug("Sides: " + str(self.sides) +
                          "Quantity: " + str(self.quantity))
-        except ValueError:
+        except (ValueError, AttributeError):
             pass
 
     def __bool__(self):
-        if self.__dice:
+        if self.quantity != 0 and self.sides != 0:
             return True
         else:
-            False
+            return False
 
 
-class Die():
+class Die(object):
     """Class that handles dice rolls using the rand function and regular expressions
 
     Attributes
@@ -65,6 +65,12 @@ class Die():
         self.operators = self.oplist
 
         logger.debug(str(self.operators))
+    
+    def __bool__(self):
+        if bool(self.dice):
+            return True
+        else:
+            return False
 
 
 class Operator():
@@ -136,7 +142,7 @@ class Successes(LeftHandOperator):
         dice_list = []
         logger.debug("Evaluating successes!")
         for d in results:
-            if d > operand:
+            if d > int(operand):
                 dice_list.append((d, True))
             else:
                 dice_list.append((d, False))
@@ -151,10 +157,10 @@ class Exploding(LeftHandOperator):
     @classmethod
     def evaluate(cls, results, operand, roll):
         eval_results = results
-        log.debug("Evaluating Exploding!")
+        logger.debug("Evaluating Exploding!")
         for d in results:
             r = d
-            while r >= operand:
+            while r >= int(operand):
                 temp_roll = math.ceil(random.random() * roll.die.dice.sides)
                 r = temp_roll
                 eval_results.append(r)

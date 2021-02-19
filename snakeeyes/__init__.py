@@ -1,4 +1,5 @@
 from dice_logic import Roll
+from elements import DiceString, Die
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
