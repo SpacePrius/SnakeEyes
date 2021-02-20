@@ -150,7 +150,6 @@ class Roll():
                     self.result_string = self.dice_regex.sub(
                         f"{self.total}", string)
                     logger.debug("Result String first: %s", self.result_string)
-                    
                     op_queue = self.op_collection(self.die)
                     if op_queue:
                         logger.debug("Operator!")
@@ -164,6 +163,8 @@ class Roll():
                         except (ValueError, TypeError, AttributeError):
                             self.final = arithmeticEval(self.string)
                         self.final = self.total
+                    if self.result_string:
+                        self.final = arithmeticEval(self.result_string)
             else:
                 logger.debug("Result path:")
                 self.final = arithmeticEval(self.result_string)
