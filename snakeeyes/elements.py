@@ -52,7 +52,8 @@ class DiceString():
     def __bool__(self):
         if self.quantity != 0 and self.sides != 0:
             return True
-        return False
+        else:
+            return False
 
 
 class Die():
@@ -65,19 +66,21 @@ class Die():
     dice : DiceString
         Processed dicestring
     """
-    opparse = re.compile(r"(?P<operator>[^\dd\(\)])(?P<operand>\d*)")
+    opparse = re.compile(r"(?P<operator>[^\dd\(\)\+\-\*\/\.])(?P<operand>\d*)")
 
     def __init__(self, string: str):
         self.string = string
         logger.debug("String: %s", self.string)
         self.dice = DiceString(string)
         self.oplist = self.opparse.findall(string)
+        logger.debug("Oplist")
         self.operators = self.oplist
 
         logger.debug(str(self.operators))
 
     def __bool__(self):
         if bool(self.dice):
+            logger.debug("Die is true")
             return True
         return False
 

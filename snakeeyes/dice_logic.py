@@ -13,10 +13,36 @@ import math
 import random
 import re
 import logging
-import ast
 from .elements import Die, Exploding, Successes
 
+import ast, operator
+
+binOps = {
+    ast.Add: operator.add,
+    ast.Sub: operator.sub,
+    ast.Mult: operator.mul,
+    ast.Div: operator.truediv,
+    ast.Mod: operator.mod
+}
+
+def arithmeticEval (s):
+    node = ast.parse(s, mode='eval')
+
+    def _eval(node):
+        if isinstance(node, ast.Expression):
+            return _eval(node.body)
+        elif isinstance(node, ast.Str):
+            return node.s
+        elif isinstance(node, ast.Num):
+            return node.n
+        elif isinstance(node, ast.BinOp):
+            return binOps[type(node.op)](_eval(node.left), _eval(node.right))
+        else:
+            raise Exception('Unsupported type {}'.format(node))
+
+    return _eval(node.body)
 logger = logging.getLogger('snakeeyes.dicelogic')
+
 
 op_dict = {
     ">": Successes,
@@ -33,13 +59,16 @@ def roll(die: Die):
 
     die : elements.Die
     """
-    dice_array = []
-    for i in range(die.dice.quantity):
-        dice_array.append(math.ceil(random.random() * die.dice.sides))
-    dice_total = 0
-    for r in dice_array:
-        dice_total += r
-    return (dice_array, dice_total)
+    if die:
+        dice_array = []
+        for i in range(die.dice.quantity):
+            dice_array.append(math.ceil(random.random() * die.dice.sides))
+        dice_total = 0
+        for r in dice_array:
+            dice_total += r
+        return (dice_array, dice_total)
+    else:
+        return False
 
 
 class Roll():
@@ -109,32 +138,37 @@ class Roll():
     def __init__(self, string: str):
         self.string = string
         try:
+            logger.debug("Trying!")
             self.die = Die(self.string)
-            if self.die:
+            if self.die.dice:
+                logger.debug("Dice detected")
                 r = roll(self.die)
                 self.results = r[0]
-                self.total = r[1]
-                self.result_string = self.dice_regex.sub(
-                    f"{self.total}", string)
-                logger.debug("Result String first: %s", self.result_string)
-                
-                op_queue = self.op_collection(self.die)
-                if op_queue in locals():
-                    logger.debug("Operator!")
-                    self.operator = True
-                    self.results = self.op_evaluate(op_queue)
-                    try:
-                        total = 0
-                        for i in self.results:
-                            total += i
-                        self.total = total
-                    except (ValueError, TypeError, AttributeError):
-                        pass
-                    self.final = self.total
-                else:
-                    self.final = ast.literal_eval(self.result_string)
-                    logger.debug("Final: %s", self.final)
+                if self.results: 
+                    logger.debug("Results detected")
+                    self.total = r[1]
+                    self.result_string = self.dice_regex.sub(
+                        f"{self.total}", string)
+                    logger.debug("Result String first: %s", self.result_string)
+                    
+                    op_queue = self.op_collection(self.die)
+                    if op_queue:
+                        logger.debug("Operator!")
+                        self.operator = True
+                        self.results = self.op_evaluate(op_queue)
+                        try:
+                            total = 0
+                            for i in self.results:
+                                total += i
+                            self.total = total
+                        except (ValueError, TypeError, AttributeError):
+                            self.final = arithmeticEval(self.string)
+                        self.final = self.total
+            else:
+                logger.debug("Result path:")
+                self.final = arithmeticEval(self.result_string)
+                logger.debug("Final: %s", self.final)
         except AttributeError:
-            logger.debug("Exception result string: %s", self.result_string)
-            self.final = ast.literal_eval(self.result_string)
+            logger.debug("Exception result string: %s", self.string)
+            self.final = arithmeticEval(self.string)
             logger.debug("Final: %s", self.final)
