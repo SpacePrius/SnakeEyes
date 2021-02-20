@@ -127,7 +127,7 @@ class Roll():
                         self.total = total
                     except (ValueError, TypeError, AttributeError):
                         pass
-                    self.final = str(self.results)
+                    self.final = self.total
                 else:
                     self.result_string = self.math_regex.search(
                         self.string).group
