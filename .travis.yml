@@ -1,8 +1,13 @@
 language: python
 python:
   - "3.9"
+before_install:
+  - export CODACY_PROJECT_TOKEN=3c4f78eee44c45fbb29699e539d86112
 install:
   - pip install -r requirements.txt
   - pip install .
 script:
-  - pytest
+  - coverage run -m pytest
+after_script:
+  - coverage xml
+  - bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage.xml
