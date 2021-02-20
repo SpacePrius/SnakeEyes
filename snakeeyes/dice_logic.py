@@ -156,11 +156,14 @@ class Roll():
                         self.operator = True
                         self.results = self.op_evaluate(op_queue)
                         self.total = 0
-                        for i in self.results:
-                            self.total += i
-                        self.final = self.total
-                        self.result_string = self.dice_regex.sub(
-                        f"{self.total}", string)
+                        try:
+                            for i in self.results:
+                                self.total += i
+                            self.final = self.total
+                            self.result_string = self.dice_regex.sub(
+                            f"{self.total}", string)
+                        except TypeError:
+                            pass
                     if self.result_string:
                         self.final = arithmeticEval(self.result_string)
             else:
