@@ -7,7 +7,7 @@ logger = logging.getLogger('snakeeyes.elements')
 """Handles the Grammar of the document"""
 
 
-class DiceString(object):
+class DiceString():
     """
         Generates the dice string to put through the system
 
@@ -44,7 +44,7 @@ class DiceString(object):
         return False
 
 
-class Die(object):
+class Die():
     """Class that handles dice rolls using the rand function and regular expressions
 
     Attributes
