@@ -3,8 +3,8 @@ import math
 import random
 import re
 import logging
-
-from .elements import Die, Exploding, Operator, Successes
+import ast
+from .elements import Die, Exploding, Successes
 
 logging.getLogger('snakeeyes.dicelogic')
 
@@ -12,6 +12,17 @@ op_dict = {
     ">": Successes,
     "x": Exploding,
 }
+
+
+def roll(die: Die):
+    """Takes Die object and returns a tuple containing a list of results, and a total of of all rolls."""
+    dice_array = []
+    for i in range(die.dice.quantity):
+        dice_array.append(math.ceil(random.random() * die.dice.sides))
+    dice_total = 0
+    for r in dice_array:
+        dice_total += r
+    return (dice_array, dice_total)
 
 
 class Roll():
@@ -43,16 +54,6 @@ class Roll():
     dice_regex = re.compile(r"\d*d\d*(?:[^d\d\(\)+\-\*/]\d*)*")
     math_regex = re.compile(r"[\(\)+*-\/\d]+")
 
-    def roll(self, die: Die):
-        """Takes Die object and returns a tuple containing a list of results, and a total of of all rolls."""
-        dice_array = []
-        for i in range(die.dice.quantity):
-            dice_array.append(math.ceil(random.random() * die.dice.sides))
-        dice_total = 0
-        for r in dice_array:
-            dice_total += r
-        return (dice_array, dice_total)
-
     def op_collection(self, die: Die):
         """Take die object and return list of operator classes"""
         ops = []
@@ -78,9 +79,9 @@ class Roll():
         try:
             self.die = Die(self.string)
             if self.die:
-                roll = self.roll(self.die)
-                self.results = roll[0]
-                self.total = roll[1]
+                r = roll(self.die)
+                self.results = r[0]
+                self.total = r[1]
                 self.result_string = self.dice_regex.sub(
                     f"{self.total}", string)
                 op_queue = self.op_collection(self.die)
@@ -93,4 +94,4 @@ class Roll():
                     self.final = self.result_string
         except AttributeError:
             self.result_string = self.math_regex.search(self.string).group
-            self.final = eval(self.result_string)
+            self.final = ast.literal_eval(self.result_string)

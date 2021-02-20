@@ -33,8 +33,7 @@ class DiceString():
         try:
             self.quantity = int(self.__dice.group("quantity"))
             self.sides = int(self.__dice.group("sides"))
-            logger.debug("Sides: " + str(self.sides) +
-                         "Quantity: " + str(self.quantity))
+            logger.debug("Sides: %i \n Quantity: %i ", self.sides, self.quantity)
         except (ValueError, AttributeError):
             pass
 
@@ -58,7 +57,7 @@ class Die():
 
     def __init__(self, string: str):
         self.string = string
-        logger.debug("String: " + self.string)
+        logger.debug("String: %s", self.string)
         self.dice = DiceString(string)
         self.oplist = self.opparse.findall(string)
         self.operators = self.oplist
@@ -136,7 +135,7 @@ class Successes(LeftHandOperator):
     char = r"\>"
 
     @classmethod
-    def evaluate(cls, results, operand, die):
+    def evaluate(cls, results: list, operand: int, die: Die):
         dice_list = []
         logger.debug("Evaluating successes!")
         for d in results:
@@ -153,20 +152,20 @@ class Exploding(LeftHandOperator):
     char = r"x"
 
     @classmethod
-    def evaluate(cls, results, operand: int, die: Die):
+    def evaluate(cls, results: list, operand: int, die: Die):
         eval_results = results
         logger.debug("Evaluating Exploding!")
         for d in results:
-            logger.debug("D is: " + str(d))
+            logger.debug("D is: %i", d)
             r = d
-            logger.debug("Operand:" + str(operand))
+            logger.debug("Operand: %i", operand)
             while r >= operand:
                 logger.debug("Exploded!")
                 temp_roll = math.ceil(random.random() * die.dice.sides)
                 r = temp_roll
-                logger.debug(" R is " + str(r))
+                logger.debug(" R is %i", r)
                 eval_results.append(temp_roll)
                 if r >= operand:
                     break
-        logger.debug("Exploded dice:" + str(eval_results))
+        logger.debug("Exploded dice: %s", str(eval_results))
         return eval_results
