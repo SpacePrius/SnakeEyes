@@ -65,7 +65,7 @@ class Die(object):
         self.operators = self.oplist
 
         logger.debug(str(self.operators))
-    
+
     def __bool__(self):
         if bool(self.dice):
             return True
@@ -138,7 +138,7 @@ class Successes(LeftHandOperator):
     char = r"\>"
 
     @classmethod
-    def evaluate(cls, results, operand, roll):
+    def evaluate(cls, results, operand, die):
         dice_list = []
         logger.debug("Evaluating successes!")
         for d in results:
@@ -155,13 +155,20 @@ class Exploding(LeftHandOperator):
     char = r"x"
 
     @classmethod
-    def evaluate(cls, results, operand, roll):
+    def evaluate(cls, results, operand: int, die: Die):
         eval_results = results
         logger.debug("Evaluating Exploding!")
         for d in results:
-            r = int(d)
-            while r >= int(operand):
-                temp_roll = math.ceil(random.random() * roll.die.dice.sides)
+            logger.debug("D is: " + str(d))
+            r = d
+            logger.debug("Operand:" + str(operand))
+            while r >= operand:
+                logger.debug("Exploded!")
+                temp_roll = math.ceil(random.random() * die.dice.sides)
                 r = temp_roll
-                eval_results.append(r)
+                logger.debug(" R is " + str(r))
+                eval_results.append(temp_roll)
+                if r >= operand:
+                    break
+        logger.debug("Exploded dice:" + str(eval_results))
         return eval_results

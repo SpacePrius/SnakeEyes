@@ -59,20 +59,19 @@ class Roll():
         for o in die.operators:
             try:
                 operator = op_dict[o[0]]
-                op = (operator, o[1])
+                op = (operator, int(o[1]))
                 ops.append(op)
             except KeyError:
                 continue
             return ops
-        
+
     def op_evaluate(self, ops: list[tuple]):
         """Take results and operators and return a final result"""
         ops = sorted(ops, key=lambda op: op[0].priority)
         last_output = self.results
         for o in ops:
-            last_output = o[0].evaluate(last_output, o[1], self)
+            last_output = o[0].evaluate(last_output, o[1], self.die)
         return last_output
-
 
     def __init__(self, string: str):
         self.string = string
@@ -82,13 +81,15 @@ class Roll():
                 roll = self.roll(self.die)
                 self.results = roll[0]
                 self.total = roll[1]
-                self.result_string = self.dice_regex.sub(f"{self.total}", string)
+                self.result_string = self.dice_regex.sub(
+                    f"{self.total}", string)
                 op_queue = self.op_collection(self.die)
                 if op_queue:
                     self.operator = True
                     self.final = self.op_evaluate(op_queue)
                 else:
-                    self.result_string = self.math_regex.search(self.string).group                
+                    self.result_string = self.math_regex.search(
+                        self.string).group
                     self.final = self.result_string
         except AttributeError:
             self.result_string = self.math_regex.search(self.string).group

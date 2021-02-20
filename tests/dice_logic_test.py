@@ -20,4 +20,4 @@ class TestOperators():
     def test_success(self):
         return snakeeyes.Roll("1d20>5")
     def test_explode(self):
-        return snakeeyes.Roll("10d20x10")
+        return snakeeyes.Roll("1000d20x10")
