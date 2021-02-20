@@ -19,7 +19,8 @@ logger = logging.getLogger('snakeeyes.elements')
 
 
 class DiceString():
-    """Generates the dice string to put through the system
+    """
+    Generates the dice string to put through the system
 
         Attributes
         ----------
