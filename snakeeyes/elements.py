@@ -41,8 +41,7 @@ class DiceString(object):
     def __bool__(self):
         if self.quantity != 0 and self.sides != 0:
             return True
-        else:
-            return False
+        return False
 
 
 class Die(object):
@@ -69,8 +68,7 @@ class Die(object):
     def __bool__(self):
         if bool(self.dice):
             return True
-        else:
-            return False
+        return False
 
 
 class Operator():
