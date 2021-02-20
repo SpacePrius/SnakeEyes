@@ -155,14 +155,12 @@ class Roll():
                         logger.debug("Operator!")
                         self.operator = True
                         self.results = self.op_evaluate(op_queue)
-                        try:
-                            total = 0
-                            for i in self.results:
-                                total += i
-                            self.total = total
-                        except (ValueError, TypeError, AttributeError):
-                            self.final = arithmeticEval(self.string)
+                        self.total = 0
+                        for i in self.results:
+                            self.total += i
                         self.final = self.total
+                        self.result_string = self.dice_regex.sub(
+                        f"{self.total}", string)
                     if self.result_string:
                         self.final = arithmeticEval(self.result_string)
             else:
