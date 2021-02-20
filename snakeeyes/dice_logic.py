@@ -119,7 +119,7 @@ class Roll():
                 op_queue = self.op_collection(self.die)
                 if op_queue:
                     self.operator = True
-                    self.final = self.op_evaluate(op_queue)
+                    self.final = str(self.op_evaluate(op_queue))
                 else:
                     self.result_string = self.math_regex.search(
                         self.string).group
