@@ -119,7 +119,18 @@ class Roll():
                 op_queue = self.op_collection(self.die)
                 if op_queue:
                     self.operator = True
-                    self.final = str(self.op_evaluate(op_queue))
+                    self.results = self.op_evaluate(op_queue)
+                    try:
+                        total = 0
+                        for i in self.results:
+                            total += i
+                        self.total = total
+                    except (ValueError, TypeError, AttributeError):
+                        pass
+                    self.final = str(self.results)
+
+
+
                 else:
                     self.result_string = self.math_regex.search(
                         self.string).group
