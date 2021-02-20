@@ -16,7 +16,7 @@ import logging
 import ast
 from .elements import Die, Exploding, Successes
 
-logging.getLogger('snakeeyes.dicelogic')
+logger = logging.getLogger('snakeeyes.dicelogic')
 
 op_dict = {
     ">": Successes,
@@ -116,8 +116,11 @@ class Roll():
                 self.total = r[1]
                 self.result_string = self.dice_regex.sub(
                     f"{self.total}", string)
+                logger.debug("Result String first: %s", self.result_string)
+                
                 op_queue = self.op_collection(self.die)
-                if op_queue:
+                if op_queue in locals():
+                    logger.debug("Operator!")
                     self.operator = True
                     self.results = self.op_evaluate(op_queue)
                     try:
@@ -129,9 +132,9 @@ class Roll():
                         pass
                     self.final = self.total
                 else:
-                    self.result_string = self.math_regex.search(
-                        self.string).group
                     self.final = ast.literal_eval(self.result_string)
+                    logger.debug("Final: %s", self.final)
         except AttributeError:
-            self.result_string = self.math_regex.search(self.string).group
+            logger.debug("Exception result string: %s", self.result_string)
             self.final = ast.literal_eval(self.result_string)
+            logger.debug("Final: %s", self.final)
