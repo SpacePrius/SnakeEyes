@@ -25,7 +25,14 @@ op_dict = {
 
 
 def roll(die: Die):
-    """Takes Die object and returns a tuple containing a list of results, and a total of of all rolls."""
+    """
+    Takes Die object and returns a tuple containing a list of results, and a total of of all rolls.
+    
+    Parameters
+    ----------
+
+    die : elements.Die
+    """
     dice_array = []
     for i in range(die.dice.quantity):
         dice_array.append(math.ceil(random.random() * die.dice.sides))
@@ -50,17 +57,19 @@ class Roll():
         Regex showing how to extract just the dice string from an object
     op_dict : dict
         dictionary containing the characters of an operator, and the assosciated class
-    die : Die
+    die : elements.Die
         Dice roll using string input
-    results : list
+    results : list of int
         List of results from dice rolled
     total : int
         The total of all dice rolled
 
     Methods
     -------
-    op_collection
-    op_evaluate
+    op_collection(die)
+        Return operator class list
+    op_evaluate(ops)
+        Return the final result of all operators
 
     """
 
@@ -68,7 +77,17 @@ class Roll():
     math_regex = re.compile(r"[\(\)+*-\/\d]+")
 
     def op_collection(self, die: Die):
-        """Take die object and return list of operator classes."""
+        """
+        Take die object and return list of operator classes.
+        
+        Parameters
+        ----------
+        die : elements.Die
+
+        Returns
+        -------
+        ops : list of (elements.operator, int)
+        """
         ops = []
         for o in die.operators:
             try:
