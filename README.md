@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/3c4f78eee44c45fbb29699e539d86112)](https://app.codacy.com/gh/SpacePrius/SnakeEyes?utm_source=github.com&utm_medium=referral&utm_content=SpacePrius/SnakeEyes&utm_campaign=Badge_Grade_Settings)
 # SnakeEyes [![Build Status](https://www.travis-ci.com/SpacePrius/SnakeEyes.svg?branch=main)](https://www.travis-ci.com/SpacePrius/SnakeEyes)
 
 SnakeEyes is a python dice library designed to be easily extensible.
