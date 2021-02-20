@@ -1,15 +1,25 @@
+"""Handles the Grammar of the document
+
+Classes
+-------
+- DiceString
+- Die
+- Operator
+    - LeftHandOperator
+        - Successes
+        - Exploding
+
+"""
 import re
 import logging
 import random
 import math
 logger = logging.getLogger('snakeeyes.elements')
 
-"""Handles the Grammar of the document"""
-
 
 class DiceString():
-    """
-        Generates the dice string to put through the system
+
+    """Generates the dice string to put through the system
 
         Attributes
         ----------
@@ -33,7 +43,8 @@ class DiceString():
         try:
             self.quantity = int(self.__dice.group("quantity"))
             self.sides = int(self.__dice.group("sides"))
-            logger.debug("Sides: %i \n Quantity: %i ", self.sides, self.quantity)
+            logger.debug("Sides: %i \n Quantity: %i ",
+                         self.sides, self.quantity)
         except (ValueError, AttributeError):
             pass
 
@@ -44,7 +55,8 @@ class DiceString():
 
 
 class Die():
-    """Class that handles dice rolls using the rand function and regular expressions
+
+    """Class that handles dice rolls using the rand function and regular expressions.
 
     Attributes
     ----------
@@ -71,8 +83,8 @@ class Die():
 
 
 class Operator():
-    """
-    Handles creating operators for use in rolls
+
+    """Handles creating operators for use in rolls.
 
     ...
 
@@ -95,9 +107,7 @@ class Operator():
 
     @classmethod
     def parse(cls, string):
-        """
-        Take a string and output its operator and operands
-        """
+        """Take a string and output its operator and operands."""
         compiled = re.compile(cls.regex)
         return compiled.search(string).groupdict()
 
@@ -107,8 +117,8 @@ class Operator():
 
 
 class LeftHandOperator(Operator):
-    """
-    Operators that act on the object to the left, using the object on the right, inherits from Operator
+
+    """Operators that act on the object to the left, using the object on the right, inherits from Operator.
 
     Attributes
     ----------
@@ -128,9 +138,7 @@ class LeftHandOperator(Operator):
 
 class Successes(LeftHandOperator):
 
-    """
-    Takes an operand and calculates how many successes there have been
-    """
+    """Takes an operand and calculates how many successes there have been."""
     priority = 7
     char = r"\>"
 
@@ -148,6 +156,7 @@ class Successes(LeftHandOperator):
 
 
 class Exploding(LeftHandOperator):
+    """Takes dice results, and if the value is greater than the threshold, rolls another die."""
     priority = 1
     char = r"x"
 

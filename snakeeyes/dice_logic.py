@@ -1,4 +1,13 @@
-"""Handles the actual logic of dice rolls"""
+"""Handles the actual logic of dice rolls
+
+Classes
+-------
+Roll
+
+Functions
+---------
+roll
+"""
 import math
 import random
 import re
@@ -48,14 +57,16 @@ class Roll():
 
     Methods
     -------
-    roll
+    op_collection
+    op_evaluate
+
     """
 
     dice_regex = re.compile(r"\d*d\d*(?:[^d\d\(\)+\-\*/]\d*)*")
     math_regex = re.compile(r"[\(\)+*-\/\d]+")
 
     def op_collection(self, die: Die):
-        """Take die object and return list of operator classes"""
+        """Take die object and return list of operator classes."""
         ops = []
         for o in die.operators:
             try:
@@ -67,7 +78,7 @@ class Roll():
             return ops
 
     def op_evaluate(self, ops: list[tuple]):
-        """Take results and operators and return a final result"""
+        """Take results and operators and return a final result."""
         ops = sorted(ops, key=lambda op: op[0].priority)
         last_output = self.results
         for o in ops:

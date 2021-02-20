@@ -1,3 +1,5 @@
+"""A python dice library.
+"""
 from .dice_logic import Roll
 from .elements import DiceString, Die
 import logging
