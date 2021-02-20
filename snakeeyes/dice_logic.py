@@ -1,4 +1,5 @@
-"""Handles the actual logic of dice rolls
+"""
+Handles the actual logic of dice rolls
 
 Classes
 -------
@@ -35,6 +36,7 @@ def roll(die: Die):
 
 
 class Roll():
+
     """A class which takes a string and outputs a dice roll
 
     Parameters

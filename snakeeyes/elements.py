@@ -1,4 +1,5 @@
-"""Handles the Grammar of the document
+"""
+Handles the Grammar of the document
 
 Classes
 -------
@@ -18,7 +19,6 @@ logger = logging.getLogger('snakeeyes.elements')
 
 
 class DiceString():
-
     """Generates the dice string to put through the system
 
         Attributes
@@ -55,7 +55,6 @@ class DiceString():
 
 
 class Die():
-
     """Class that handles dice rolls using the rand function and regular expressions.
 
     Attributes
@@ -83,7 +82,6 @@ class Die():
 
 
 class Operator():
-
     """Handles creating operators for use in rolls.
 
     ...
@@ -117,7 +115,6 @@ class Operator():
 
 
 class LeftHandOperator(Operator):
-
     """Operators that act on the object to the left, using the object on the right, inherits from Operator.
 
     Attributes
@@ -137,7 +134,6 @@ class LeftHandOperator(Operator):
 
 
 class Successes(LeftHandOperator):
-
     """Takes an operand and calculates how many successes there have been."""
     priority = 7
     char = r"\>"
@@ -156,7 +152,9 @@ class Successes(LeftHandOperator):
 
 
 class Exploding(LeftHandOperator):
-    """Takes dice results, and if the value is greater than the threshold, rolls another die."""
+    """
+    Takes dice results, and if the value is greater than the threshold, rolls another die.
+    """
     priority = 1
     char = r"x"
 
