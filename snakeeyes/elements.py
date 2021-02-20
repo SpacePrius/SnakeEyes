@@ -34,7 +34,7 @@ class DiceString(object):
             self.quantity = int(self.__dice.group("quantity"))
             self.sides = int(self.__dice.group("sides"))
             logger.debug("Sides: " + str(self.sides) +
-                         "Quantity: " + str(self.quantity))
+                         "Quantity: ", str(self.quantity))
         except (ValueError, AttributeError):
             pass
 
@@ -59,7 +59,7 @@ class Die(object):
 
     def __init__(self, string: str):
         self.string = string
-        logger.debug("String: " + self.string)
+        logger.debug("String: ", self.string)
         self.dice = DiceString(string)
         self.oplist = self.opparse.findall(string)
         self.operators = self.oplist
@@ -159,16 +159,16 @@ class Exploding(LeftHandOperator):
         eval_results = results
         logger.debug("Evaluating Exploding!")
         for d in results:
-            logger.debug("D is: " + str(d))
+            logger.debug("D is: ", str(d))
             r = d
-            logger.debug("Operand:" + str(operand))
+            logger.debug("Operand:", str(operand))
             while r >= operand:
                 logger.debug("Exploded!")
                 temp_roll = math.ceil(random.random() * die.dice.sides)
                 r = temp_roll
-                logger.debug(" R is " + str(r))
+                logger.debug(" R is ", str(r))
                 eval_results.append(temp_roll)
                 if r >= operand:
                     break
-        logger.debug("Exploded dice:" + str(eval_results))
+        logger.debug("Exploded dice:", str(eval_results))
         return eval_results
