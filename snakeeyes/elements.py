@@ -39,6 +39,13 @@ class DiceString():
     quantity = 0
 
     def __init__(self, string):
+        """
+        Initialize the string.
+
+        Args:
+            self: (todo): write your description
+            string: (todo): write your description
+        """
         logger.debug("Initating DiceString")
         self.__dice = self.parsestring.search(string)
         try:
@@ -50,6 +57,12 @@ class DiceString():
             pass
 
     def __bool__(self):
+        """
+        Returns true if the boolean is true false otherwise.
+
+        Args:
+            self: (todo): write your description
+        """
         if self.quantity != 0 and self.sides != 0:
             return True
         else:
@@ -69,6 +82,13 @@ class Die():
     opparse = re.compile(r"(?P<operator>[^\dd\(\)\+\-\*\/\.])(?P<operand>\d*)")
 
     def __init__(self, string: str):
+        """
+        Initialize string from the string.
+
+        Args:
+            self: (todo): write your description
+            string: (todo): write your description
+        """
         self.string = string
         logger.debug("String: %s", self.string)
         self.dice = DiceString(string)
@@ -79,6 +99,12 @@ class Die():
         logger.debug(str(self.operators))
 
     def __bool__(self):
+        """
+        Returns true if the dice is true false otherwise.
+
+        Args:
+            self: (todo): write your description
+        """
         if bool(self.dice):
             logger.debug("Die is true")
             return True
@@ -115,6 +141,13 @@ class Operator():
 
     @classmethod
     def evaluate(cls, dice):
+        """
+        Evaluate the given dice.
+
+        Args:
+            cls: (callable): write your description
+            dice: (todo): write your description
+        """
         pass
 
 
@@ -133,6 +166,13 @@ class LeftHandOperator(Operator):
 
     @classmethod
     def parse(cls, string):
+        """
+        Parse a string of regex string.
+
+        Args:
+            cls: (todo): write your description
+            string: (str): write your description
+        """
         compiled = re.compile(cls.regex)
         return compiled.search(string).groupdict()
 
@@ -144,6 +184,15 @@ class Successes(LeftHandOperator):
 
     @classmethod
     def evaluate(cls, results: list, operand: int, die: Die):
+        """
+        Evaluate a list of results.
+
+        Args:
+            cls: (callable): write your description
+            results: (dict): write your description
+            operand: (todo): write your description
+            die: (todo): write your description
+        """
         dice_list = []
         logger.debug("Evaluating successes!")
         for d in results:
@@ -164,6 +213,15 @@ class Exploding(LeftHandOperator):
 
     @classmethod
     def evaluate(cls, results: list, operand: int, die: Die):
+        """
+        Evaluate the objective function.
+
+        Args:
+            cls: (callable): write your description
+            results: (dict): write your description
+            operand: (todo): write your description
+            die: (todo): write your description
+        """
         eval_results = results
         logger.debug("Evaluating Exploding!")
         for d in results:

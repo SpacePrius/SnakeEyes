@@ -26,9 +26,21 @@ binOps = {
 }
 
 def arithmeticEval (s):
+    """
+    Evaluate an operator.
+
+    Args:
+        s: (todo): write your description
+    """
     node = ast.parse(s, mode='eval')
 
     def _eval(node):
+        """
+        Evaluate an ast node.
+
+        Args:
+            node: (todo): write your description
+        """
         if isinstance(node, ast.Expression):
             return _eval(node.body)
         elif isinstance(node, ast.Str):
@@ -136,6 +148,13 @@ class Roll():
         return last_output
 
     def __init__(self, string: str):
+        """
+        Init results from the input string.
+
+        Args:
+            self: (todo): write your description
+            string: (todo): write your description
+        """
         self.string = string
         try:
             logger.debug("Trying!")
