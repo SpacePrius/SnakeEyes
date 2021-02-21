@@ -39,6 +39,13 @@ class DiceString():
     quantity = 0
 
     def __init__(self, string):
+        """
+        Initialize the string.
+
+        Args:
+            self: (todo): write your description
+            string: (todo): write your description
+        """
         logger.debug("Initating DiceString")
         self.__dice = self.parsestring.search(string)
         try:
@@ -50,10 +57,13 @@ class DiceString():
             pass
 
     def __bool__(self):
-        if self.quantity != 0 and self.sides != 0:
-            return True
-        else:
-            return False
+        """
+        Returns true if the boolean is true false otherwise.
+
+        Args:
+            self: (todo): write your description
+        """
+        return bool(self.quantity != 0 and self.sides != 0)
 
 
 class Die():
@@ -69,6 +79,13 @@ class Die():
     opparse = re.compile(r"(?P<operator>[^\dd\(\)\+\-\*\/\.])(?P<operand>\d*)")
 
     def __init__(self, string: str):
+        """
+        Initialize Die from the string.
+
+        Args:
+            self: The Instance.
+            string: (str): The string to be processed.
+        """
         self.string = string
         logger.debug("String: %s", self.string)
         self.dice = DiceString(string)
@@ -79,6 +96,12 @@ class Die():
         logger.debug(str(self.operators))
 
     def __bool__(self):
+        """
+        Returns true if the dice is true false otherwise.
+
+        Args:
+            self:: The instance
+        """
         if bool(self.dice):
             logger.debug("Die is true")
             return True
@@ -99,7 +122,7 @@ class Operator():
 
     Functions
     -------
-    parse - Take the string and show that its there
+    parse - Take the string and output operator and operands
     evaluate - Blank method where the operator is processed
 
     """
@@ -115,7 +138,13 @@ class Operator():
 
     @classmethod
     def evaluate(cls, dice):
-        pass
+        """
+        Evaluate the given dice.
+
+        Args:
+            cls: (callable): The class
+            dice: (Die): The Die being rolled
+        """
 
 
 class LeftHandOperator(Operator):
@@ -133,6 +162,13 @@ class LeftHandOperator(Operator):
 
     @classmethod
     def parse(cls, string):
+        """
+        Parse a string using regex.
+
+        Args:
+            cls: (todo): The class
+            string: (str): An arbitrary string
+        """
         compiled = re.compile(cls.regex)
         return compiled.search(string).groupdict()
 
@@ -144,6 +180,15 @@ class Successes(LeftHandOperator):
 
     @classmethod
     def evaluate(cls, results: list, operand: int, die: Die):
+        """
+        Evaluate a list of results.
+
+        Args:
+            cls: (callable): The Class
+            results: (list): List of Results.
+            operand: (int): The threshold after which die count as successes.
+            die: (Die): The Die roll.
+        """
         dice_list = []
         logger.debug("Evaluating successes!")
         for d in results:
@@ -164,6 +209,15 @@ class Exploding(LeftHandOperator):
 
     @classmethod
     def evaluate(cls, results: list, operand: int, die: Die):
+        """
+        Evaluate the objective function.
+
+        Args:
+            cls: (callable): The class
+            results: (list): The list of results
+            operand: (int): The threshold at which the die is rerolled
+            die: (Die): The Die being rolled
+        """
         eval_results = results
         logger.debug("Evaluating Exploding!")
         for d in results:
