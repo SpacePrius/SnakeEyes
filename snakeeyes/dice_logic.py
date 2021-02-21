@@ -15,7 +15,8 @@ import re
 import logging
 from .elements import Die, Exploding, Successes
 
-import ast, operator
+import ast
+import operator
 
 binOps = {
     ast.Add: operator.add,
@@ -43,11 +44,11 @@ def arithmeticEval (s):
         """
         if isinstance(node, ast.Expression):
             return _eval(node.body)
-        elif isinstance(node, ast.Str):
+        if isinstance(node, ast.Str):
             return node.s
-        elif isinstance(node, ast.Num):
+        if isinstance(node, ast.Num):
             return node.n
-        elif isinstance(node, ast.BinOp):
+        if isinstance(node, ast.BinOp):
             return binOps[type(node.op)](_eval(node.left), _eval(node.right))
         else:
             raise Exception('Unsupported type {}'.format(node))
@@ -117,7 +118,8 @@ class Roll():
     dice_regex = re.compile(r"\d*d\d*(?:[^d\d\(\)+\-\*/]\d*)*")
     math_regex = re.compile(r"[\(\)+*-\/\d]+")
 
-    def op_collection(self, die: Die):
+    @staticmethod
+    def op_collection(die: Die):
         """
         Take die object and return list of operator classes.
 

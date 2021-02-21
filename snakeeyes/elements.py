@@ -63,10 +63,7 @@ class DiceString():
         Args:
             self: (todo): write your description
         """
-        if self.quantity != 0 and self.sides != 0:
-            return True
-        else:
-            return False
+        return bool(self.quantity != 0 and self.sides != 0)
 
 
 class Die():
@@ -148,7 +145,6 @@ class Operator():
             cls: (callable): The class
             dice: (Die): The Die being rolled
         """
-        pass
 
 
 class LeftHandOperator(Operator):
