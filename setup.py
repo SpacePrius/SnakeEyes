@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="snakeeyes-spaceprius",  # Replace with your own username
-    version="0.1.0",
+    version="0.1.1",
     author="Emily Stringer",
     author_email="emily@spaceprius.com",
     description="A simple python dice library built with regex, currently in alpha",

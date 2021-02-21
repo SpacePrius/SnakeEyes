@@ -141,7 +141,7 @@ class Roll():
                 continue
             return ops
 
-    def op_evaluate(self, ops: list[tuple]):
+    def op_evaluate(self, ops: list):
         """Take results and operators and return a final result."""
         ops = sorted(ops, key=lambda op: op[0].priority)
         last_output = self.results
