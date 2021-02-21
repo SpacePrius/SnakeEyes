@@ -83,11 +83,11 @@ class Die():
 
     def __init__(self, string: str):
         """
-        Initialize string from the string.
+        Initialize Die from the string.
 
         Args:
-            self: (todo): write your description
-            string: (todo): write your description
+            self: The Instance.
+            string: (str): The string to be processed.
         """
         self.string = string
         logger.debug("String: %s", self.string)
@@ -103,7 +103,7 @@ class Die():
         Returns true if the dice is true false otherwise.
 
         Args:
-            self: (todo): write your description
+            self:: The instance
         """
         if bool(self.dice):
             logger.debug("Die is true")
@@ -125,7 +125,7 @@ class Operator():
 
     Functions
     -------
-    parse - Take the string and show that its there
+    parse - Take the string and output operator and operands
     evaluate - Blank method where the operator is processed
 
     """
@@ -145,8 +145,8 @@ class Operator():
         Evaluate the given dice.
 
         Args:
-            cls: (callable): write your description
-            dice: (todo): write your description
+            cls: (callable): The class
+            dice: (Die): The Die being rolled
         """
         pass
 
@@ -167,11 +167,11 @@ class LeftHandOperator(Operator):
     @classmethod
     def parse(cls, string):
         """
-        Parse a string of regex string.
+        Parse a string using regex.
 
         Args:
-            cls: (todo): write your description
-            string: (str): write your description
+            cls: (todo): The class
+            string: (str): An arbitrary string
         """
         compiled = re.compile(cls.regex)
         return compiled.search(string).groupdict()
@@ -188,10 +188,10 @@ class Successes(LeftHandOperator):
         Evaluate a list of results.
 
         Args:
-            cls: (callable): write your description
-            results: (dict): write your description
-            operand: (todo): write your description
-            die: (todo): write your description
+            cls: (callable): The Class
+            results: (list): List of Results.
+            operand: (int): The threshold after which die count as successes.
+            die: (Die): The Die roll.
         """
         dice_list = []
         logger.debug("Evaluating successes!")
@@ -217,10 +217,10 @@ class Exploding(LeftHandOperator):
         Evaluate the objective function.
 
         Args:
-            cls: (callable): write your description
-            results: (dict): write your description
-            operand: (todo): write your description
-            die: (todo): write your description
+            cls: (callable): The class
+            results: (list): The list of results
+            operand: (int): The threshold at which the die is rerolled
+            die: (Die): The Die being rolled
         """
         eval_results = results
         logger.debug("Evaluating Exploding!")
