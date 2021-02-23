@@ -1,13 +1,17 @@
 language: python
 python:
+  - "3.6"
+  - "3.7"
+  - "3.8"
   - "3.9"
-before_install:
-  - export CODACY_PROJECT_TOKEN=3c4f78eee44c45fbb29699e539d86112
+env:
+  - CODECOV_TOKEN='bd000f2f-4e22-4471-87a9-e6459ebdec7d'
 install:
-  - pip install -r requirements.txt
+  - pip install pytest coverage
   - pip install .
 script:
   - coverage run -m pytest
 after_script:
   - coverage xml
-  - bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage.xml
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
