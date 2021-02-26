@@ -65,6 +65,26 @@ class TestMath():
         """
         return snakeeyes.Roll("(1d20+5)*20")
 
+class TestMultiDice():
+    @staticmethod
+    def test_add():
+        return snakeeyes.Roll("1d6+2d10")
+    @staticmethod
+    def test_subtract():
+        return snakeeyes.Roll("3d20-6d20")
+    @staticmethod
+    def test_divide():
+        return snakeeyes.Roll("7d10/3d20")
+    @staticmethod
+    def test_mult():
+        return snakeeyes.Roll("3d20*2d10")
+    @staticmethod
+    def test_exp():
+        return snakeeyes.Roll("3d20x15*2d10x15")
+    @staticmethod
+    def test_succ():
+        return snakeeyes.Roll("3d20>10+2d20>10")
+
 
 class TestOperators():
     def test_success(self):

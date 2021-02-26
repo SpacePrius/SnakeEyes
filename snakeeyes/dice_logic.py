@@ -13,7 +13,7 @@ import math
 import random
 import re
 import logging
-from .elements import DiceGroup, Exploding, Successes
+from .elements import DiceGroup, Exploding, Successes, Die
 
 import ast
 import operator
@@ -25,6 +25,7 @@ binOps = {
     ast.Div: operator.truediv,
     ast.Mod: operator.mod
 }
+
 
 def arithmeticEval(s):
     """
@@ -54,6 +55,8 @@ def arithmeticEval(s):
             raise Exception('Unsupported type {}'.format(node))
 
     return _eval(node.body)
+
+
 logger = logging.getLogger('snakeeyes.dicelogic')
 
 
@@ -63,7 +66,7 @@ op_dict = {
 }
 
 
-def roll(die: DiceGroup):
+def roll(die: Die):
     """
     Takes Die object and returns a tuple containing a list of results, and a total of of all rolls.
 
@@ -74,8 +77,8 @@ def roll(die: DiceGroup):
     """
     if die:
         dice_array = []
-        for i in range(die.dice.quantity):
-            dice_array.append(math.ceil(random.random() * die.dice.sides))
+        for i in range(die.quantity):
+            dice_array.append(math.ceil(random.random() * die.sides))
         dice_total = 0
         for r in dice_array:
             dice_total += r
@@ -119,7 +122,7 @@ class Roll():
     math_regex = re.compile(r"[\(\)+*-\/\d]+")
 
     @staticmethod
-    def op_collection(die: DiceGroup):
+    def op_collection(die: Die):
         """
         Take die object and return list of operator classes.
 
@@ -131,22 +134,22 @@ class Roll():
         -------
         ops : list of (elements.operator, int)
         """
-        ops = []
-        for o in die.operators:
+        oper = []
+        for o in die.ops:
             try:
                 operator = op_dict[o[0]]
-                op = (operator, int(o[1]))
-                ops.append(op)
+                op = (operator, o[1])
+                oper.append(op)
             except KeyError:
                 continue
-            return ops
+        oper = sorted(oper, key=lambda op: op[0].priority)
+        return oper
 
-    def op_evaluate(self, ops: list):
+    @staticmethod
+    def op_evaluate(die: Die, ops: list, results: list):
         """Take results and operators and return a final result."""
-        ops = sorted(ops, key=lambda op: op[0].priority)
-        last_output = self.results
-        for o in ops:
-            last_output = o[0].evaluate(last_output, o[1], self.die)
+        last_output = results
+        last_output = ops[0].evaluate(last_output, ops[1], die)
         return last_output
 
     def __init__(self, string: str):
@@ -158,39 +161,30 @@ class Roll():
             string: (todo): write your description
         """
         self.string = string
-        try:
-            logger.debug("Trying!")
-            self.die = DiceGroup(self.string)
-            if self.die.dice:
-                logger.debug("Dice detected")
-                r = roll(self.die)
-                self.results = r[0]
-                if self.results: 
-                    logger.debug("Results detected")
-                    self.total = r[1]
-                    self.result_string = self.dice_regex.sub(
-                        f"{self.total}", string)
-                    logger.debug("Result String first: %s", self.result_string)
-                    op_queue = self.op_collection(self.die)
-                    if op_queue:
-                        logger.debug("Operator!")
-                        self.operator = True
-                        self.results = self.op_evaluate(op_queue)
-                        self.total = 0
-                        try:
-                            for i in self.results:
-                                self.total += i
-                            self.final = self.total
-                            self.result_string = self.dice_regex.sub(f"{self.total}", string)
-                        except TypeError:
-                            pass
-                    if self.result_string:
-                        self.final = arithmeticEval(self.result_string)
-            else:
-                logger.debug("Result path:")
-                self.final = arithmeticEval(self.result_string)
-                logger.debug("Final: %s", self.final)
-        except AttributeError:
-            logger.debug("Exception result string: %s", self.string)
-            self.final = arithmeticEval(self.string)
-            logger.debug("Final: %s", self.final)
+        logger.debug("Trying!")
+        self.die = DiceGroup(self.string)
+        self.rolls = []
+        self.total = 0
+        self.results = []
+        self.successes = False
+        if self.die.dice:
+            # If there are actual dice in the roll, then do this
+            for d in self.die.dice:
+                r = roll(d)
+                self.rolls.append((r, d.string, d))
+            for r in self.rolls:
+                # This is here to basically turn all the rolls into usable stuff and then output it
+                # in a way that actually makes sense
+                tempstring = re.compile(rf"{r[1]}")
+                if r[0]:
+                    tempresults = r[0][0]
+                    self.string = tempstring.sub(f"{r[0][1]}", self.string)
+                    self.total += r[0][1]
+                    if r[2].ops:
+                        for o in self.op_collection(r[2]):
+                            tempresults = self.op_evaluate(r[2], o, tempresults)
+                            if o[0] is Successes:
+                                self.successes = True
+                                break
+                    self.results.append((r[1], tempresults))
+        self.final = arithmeticEval(self.string)

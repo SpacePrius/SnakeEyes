@@ -38,7 +38,7 @@ class Die():
     sides = 0
     quantity = 0
 
-    def __init__(self, quantity: int, sides: int, oplist: list):
+    def __init__(self, quantity: int, sides: int, oplist: list, string: str):
         """
         Initialize the string.
 
@@ -52,6 +52,7 @@ class Die():
             self.quantity = quantity
             self.sides = sides
             self.ops = oplist
+            self.string = string
             logger.debug("Sides: %i \n Quantity: %i ",
                          self.sides, self.quantity)
         except (ValueError, AttributeError):
@@ -68,8 +69,9 @@ class DiceGroup():
     dice : list
         List of dice rolled.
     """
-    parsestring = re.compile(r"(?P<quantity> \d* (?=d\d*)) d (?P<sides>\d*)", re.X)
+    parsestring = re.compile(r"(?P<quantity> \d* (?=d\d*)) d (?P<sides>\d*)(?:[x\>]\d*)*", re.X)
     parseops = re.compile(r"(?P<operator>[x\>]) (?P<operands>\d*)", re.X)
+
     def __init__(self, string: str):
         """
         Initialize a group of dice from the string.
@@ -80,23 +82,23 @@ class DiceGroup():
         """
         self.string = string
         logger.debug("String: %s", self.string)
-        __dice = self.parsestring.findall(string)
+        __dice = self.parsestring.finditer(string)
         self.dice = []
         for d in __dice:
             # Intiialize the dice
             quant = int(d.group('quantity'))
             sides = int(d.group('sides'))
             dstring = d.group()
-            ops = self.parseops.findall(dstring)
+            ops = self.parseops.finditer(dstring)
             opslist = []
             for o in ops:
                 # initialize operator tuples
                 optuple = (o.group('operator'), int(o.group('operands')))
                 opslist.append(optuple)
-            dicestring = Die(quant, sides, opslist)
+            dicestring = Die(quant, sides, opslist, dstring)
             self.dice.append(dicestring)
-        
-        logger.debug(f"Oplist: {opslist}")
+
+            logger.debug(f"Oplist: {opslist}")
         logger.debug(f"Dice: {self.dice}")
 
     def __bool__(self):
@@ -132,16 +134,9 @@ class Operator():
     """
     priority = 0
     char = r""
-    regex = rf"(?P<operator>[{char}])"
 
     @classmethod
-    def parse(cls, string):
-        """Take a string and output its operator and operands."""
-        compiled = re.compile(cls.regex)
-        return compiled.search(string).groupdict()
-
-    @classmethod
-    def evaluate(cls, dice):
+    def evaluate(cls, results: list, operand: int, die: Die):
         """
         Evaluate the given dice.
 
@@ -160,21 +155,7 @@ class LeftHandOperator(Operator):
         The arguments taken by the operator
 
     """
-    char = Operator.char
     operand = r"\d*"
-    regex = rf"(?P<operator>[{char}])(?P<operand>{operand})"
-
-    @classmethod
-    def parse(cls, string):
-        """
-        Parse a string using regex.
-
-        Args:
-            cls: (todo): The class
-            string: (str): An arbitrary string
-        """
-        compiled = re.compile(cls.regex)
-        return compiled.search(string).groupdict()
 
 
 class Successes(LeftHandOperator):
@@ -183,7 +164,7 @@ class Successes(LeftHandOperator):
     char = r"\>"
 
     @classmethod
-    def evaluate(cls, results: list, operand: int, die: DiceGroup):
+    def evaluate(cls, results: list, operand: int, die: Die):
         """
         Evaluate a list of results.
 
@@ -212,7 +193,7 @@ class Exploding(LeftHandOperator):
     char = r"x"
 
     @classmethod
-    def evaluate(cls, results: list, operand: int, die: DiceGroup):
+    def evaluate(cls, results: list, operand: int, die: Die):
         """
         Evaluate the objective function.
 
@@ -230,7 +211,7 @@ class Exploding(LeftHandOperator):
             logger.debug("Operand: %i", operand)
             while r >= operand:
                 logger.debug("Exploded!")
-                temp_roll = math.ceil(random.random() * die.dice.sides)
+                temp_roll = math.ceil(random.random() * die.sides)
                 r = temp_roll
                 logger.debug(" R is %i", r)
                 eval_results.append(temp_roll)
