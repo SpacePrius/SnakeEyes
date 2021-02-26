@@ -1,5 +1,4 @@
-# SnakeEyes [![PyPI version](https://badge.fury.io/py/snakeeyes-spaceprius.svg)](https://badge.fury.io/py/snakeeyes-spaceprius) [![Build Status](https://www.travis-ci.com/SpacePrius/SnakeEyes.svg?branch=main)](https://www.travis-ci.com/SpacePrius/SnakeEyes) [![CodeFactor](https://www.codefactor.io/repository/github/spaceprius/snakeeyes/badge/main)](https://www.codefactor.io/repository/github/spaceprius/snakeeyes/overview/main)
-
+# SnakeEyes [![PyPI version](https://badge.fury.io/py/snakeeyes-spaceprius.svg)](https://badge.fury.io/py/snakeeyes-spaceprius) [![Build Status](https://www.travis-ci.com/SpacePrius/SnakeEyes.svg?branch=main)](https://www.travis-ci.com/SpacePrius/SnakeEyes) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/f0b91062a63b48a3a0c7f73858583b75)](https://www.codacy.com/gh/SpacePrius/SnakeEyes/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=SpacePrius/SnakeEyes&amp;utm_campaign=Badge_Grade)
 SnakeEyes is a python dice library designed to be easily extensible.
 ***VERY MUCH WIP***
 

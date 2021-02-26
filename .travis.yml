@@ -5,7 +5,7 @@ python:
   - "3.8"
   - "3.9"
 env:
-  - CODECOV_TOKEN='bd000f2f-4e22-4471-87a9-e6459ebdec7d'
+  - CODACY_API_BASE_URL='066ab3574e79454188d5c0cd472136dd'
 install:
   - pip install pytest coverage
   - pip install .
@@ -14,4 +14,4 @@ script:
 after_script:
   - coverage xml
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -Ls https://coverage.codacy.com/get.sh) coverage.xml
