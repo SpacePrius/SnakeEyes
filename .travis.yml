@@ -5,7 +5,7 @@ python:
   - "3.8"
   - "3.9"
 env:
-  - CODACY_API_BASE_URL='066ab3574e79454188d5c0cd472136dd'
+  - CODACY_PROJECT_TOKEN=066ab3574e79454188d5c0cd472136dd
 install:
   - pip install pytest coverage
   - pip install .
@@ -13,5 +13,4 @@ script:
   - coverage run -m pytest
 after_script:
   - coverage xml
-after_success:
-  - bash <(curl -Ls https://coverage.codacy.com/get.sh) report
+  - bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage.xml
