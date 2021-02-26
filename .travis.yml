@@ -14,4 +14,4 @@ script:
 after_script:
   - coverage xml
 after_success:
-  - bash <(curl -Ls https://coverage.codacy.com/get.sh) coverage.xml
+  - bash <(curl -Ls https://coverage.codacy.com/get.sh) report
