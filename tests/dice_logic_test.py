@@ -68,21 +68,51 @@ class TestMath():
 class TestMultiDice():
     @staticmethod
     def test_add():
+        """
+        Add test test to a test
+
+        Args:
+        """
         return snakeeyes.Roll("1d6+2d10")
     @staticmethod
     def test_subtract():
+        """
+        Subtract test test test test
+
+        Args:
+        """
         return snakeeyes.Roll("3d20-6d20")
     @staticmethod
     def test_divide():
+        """
+        Divide a test test.
+
+        Args:
+        """
         return snakeeyes.Roll("7d10/3d20")
     @staticmethod
     def test_mult():
+        """
+        Return a test test function
+
+        Args:
+        """
         return snakeeyes.Roll("3d20*2d10")
     @staticmethod
     def test_exp():
+        """
+        Return the test test.
+
+        Args:
+        """
         return snakeeyes.Roll("3d20x15*2d10x15")
     @staticmethod
     def test_succ():
+        """
+        Returns the test test suite.
+
+        Args:
+        """
         return snakeeyes.Roll("3d20>10+2d20>10")
 
 
