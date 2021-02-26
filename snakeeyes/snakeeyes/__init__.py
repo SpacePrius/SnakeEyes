@@ -1,6 +1,6 @@
 """A python dice library."""
 from .dice_logic import Roll
-from .elements import DiceString, Die
+from .elements import Die, DiceGroup
 import logging
 
 logging.basicConfig(level=logging.DEBUG)

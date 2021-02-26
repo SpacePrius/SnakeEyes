@@ -11,14 +11,15 @@ Classes
         - Exploding
 
 """
-import re
 import logging
-import random
 import math
+import random
+import re
+
 logger = logging.getLogger('snakeeyes.elements')
 
 
-class DiceString():
+class Die():
     """
     Generates the dice string to put through the system
 
@@ -34,53 +35,44 @@ class DiceString():
             Number of sides a die has
 
     """
-    parsestring = re.compile(r"(?P<quantity>\d*(?=d\d*))d(?P<sides>\d*)")
     sides = 0
     quantity = 0
 
-    def __init__(self, string):
+    def __init__(self, quantity: int, sides: int, oplist: list):
         """
         Initialize the string.
 
         Args:
-            self: (todo): write your description
-            string: (todo): write your description
+            self: (todo): The instance
+            quantity: (int): Number of dice to be rolled
+            sides: (int): String which contains the sides of each die. Should be castable to int.
         """
         logger.debug("Initating DiceString")
-        self.__dice = self.parsestring.search(string)
         try:
-            self.quantity = int(self.__dice.group("quantity"))
-            self.sides = int(self.__dice.group("sides"))
+            self.quantity = quantity
+            self.sides = sides
+            self.ops = oplist
             logger.debug("Sides: %i \n Quantity: %i ",
                          self.sides, self.quantity)
         except (ValueError, AttributeError):
             pass
 
-    def __bool__(self):
-        """
-        Returns true if the boolean is true false otherwise.
 
-        Args:
-            self: (todo): write your description
-        """
-        return bool(self.quantity != 0 and self.sides != 0)
-
-
-class Die():
-    """Class that handles dice rolls using the rand function and regular expressions.
+class DiceGroup():
+    """Class that handles dice rolls using regular expressions.
 
     Attributes
     ----------
     string : str
         String to be processed
-    dice : DiceString
-        Processed dicestring
+    dice : list
+        List of dice rolled.
     """
-    opparse = re.compile(r"(?P<operator>[^\dd\(\)\+\-\*\/\.])(?P<operand>\d*)")
-
+    parsestring = re.compile(r"(?P<quantity> \d* (?=d\d*)) d (?P<sides>\d*)", re.X)
+    parseops = re.compile(r"(?P<operator>[x\>]) (?P<operands>\d*)", re.X)
     def __init__(self, string: str):
         """
-        Initialize Die from the string.
+        Initialize a group of dice from the string.
 
         Args:
             self: The Instance.
@@ -88,12 +80,24 @@ class Die():
         """
         self.string = string
         logger.debug("String: %s", self.string)
-        self.dice = DiceString(string)
-        self.oplist = self.opparse.findall(string)
-        logger.debug("Oplist")
-        self.operators = self.oplist
-
-        logger.debug(str(self.operators))
+        __dice = self.parsestring.findall(string)
+        self.dice = []
+        for d in __dice:
+            # Intiialize the dice
+            quant = int(d.group('quantity'))
+            sides = int(d.group('sides'))
+            dstring = d.group()
+            ops = self.parseops.findall(dstring)
+            opslist = []
+            for o in ops:
+                # initialize operator tuples
+                optuple = (o.group('operator'), int(o.group('operands')))
+                opslist.append(optuple)
+            dicestring = Die(quant, sides, opslist)
+            self.dice.append(dicestring)
+        
+        logger.debug(f"Oplist: {opslist}")
+        logger.debug(f"Dice: {self.dice}")
 
     def __bool__(self):
         """
@@ -102,7 +106,7 @@ class Die():
         Args:
             self:: The instance
         """
-        if bool(self.dice):
+        if self.dice:
             logger.debug("Die is true")
             return True
         return False
@@ -179,7 +183,7 @@ class Successes(LeftHandOperator):
     char = r"\>"
 
     @classmethod
-    def evaluate(cls, results: list, operand: int, die: Die):
+    def evaluate(cls, results: list, operand: int, die: DiceGroup):
         """
         Evaluate a list of results.
 
@@ -208,7 +212,7 @@ class Exploding(LeftHandOperator):
     char = r"x"
 
     @classmethod
-    def evaluate(cls, results: list, operand: int, die: Die):
+    def evaluate(cls, results: list, operand: int, die: DiceGroup):
         """
         Evaluate the objective function.
 

@@ -9,7 +9,7 @@ class TestDieBools():
         Args:
             self: (todo): write your description
         """
-        string = bool(snakeeyes.DiceString("28*15"))
+        string = bool(snakeeyes.Die("28*15"))
         assert string is False
 
     def test_die(self):
@@ -19,5 +19,5 @@ class TestDieBools():
         Args:
             self: (todo): write your description
         """
-        die = bool(snakeeyes.Die("28*15"))
+        die = bool(snakeeyes.DiceGroup("28*15"))
         assert die is False

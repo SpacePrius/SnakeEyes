@@ -13,7 +13,7 @@ import math
 import random
 import re
 import logging
-from .elements import Die, Exploding, Successes
+from .elements import DiceGroup, Exploding, Successes
 
 import ast
 import operator
@@ -26,7 +26,7 @@ binOps = {
     ast.Mod: operator.mod
 }
 
-def arithmeticEval (s):
+def arithmeticEval(s):
     """
     Evaluate an operator.
 
@@ -63,7 +63,7 @@ op_dict = {
 }
 
 
-def roll(die: Die):
+def roll(die: DiceGroup):
     """
     Takes Die object and returns a tuple containing a list of results, and a total of of all rolls.
 
@@ -119,7 +119,7 @@ class Roll():
     math_regex = re.compile(r"[\(\)+*-\/\d]+")
 
     @staticmethod
-    def op_collection(die: Die):
+    def op_collection(die: DiceGroup):
         """
         Take die object and return list of operator classes.
 
@@ -160,7 +160,7 @@ class Roll():
         self.string = string
         try:
             logger.debug("Trying!")
-            self.die = Die(self.string)
+            self.die = DiceGroup(self.string)
             if self.die.dice:
                 logger.debug("Dice detected")
                 r = roll(self.die)
@@ -181,8 +181,7 @@ class Roll():
                             for i in self.results:
                                 self.total += i
                             self.final = self.total
-                            self.result_string = self.dice_regex.sub(
-                            f"{self.total}", string)
+                            self.result_string = self.dice_regex.sub(f"{self.total}", string)
                         except TypeError:
                             pass
                     if self.result_string:
