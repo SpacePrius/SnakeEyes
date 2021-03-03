@@ -164,7 +164,6 @@ class Roll():
         logger.debug("Trying!")
         self.die = DiceGroup(self.string)
         self.rolls = []
-        self.total = 0
         self.results = []
         self.successes = False
         if self.die.dice:
@@ -177,14 +176,20 @@ class Roll():
                 # in a way that actually makes sense
                 tempstring = re.compile(rf"{r[1]}")
                 if r[0]:
+                    total = r[0][1]
                     tempresults = r[0][0]
                     self.string = tempstring.sub(f"{r[0][1]}", self.string)
-                    self.total += r[0][1]
                     if r[2].ops:
                         for o in self.op_collection(r[2]):
                             tempresults = self.op_evaluate(r[2], o, tempresults)
                             if o[0] is Successes:
                                 self.successes = True
+                                total = False
                                 break
-                    self.results.append((r[1], tempresults))
+                        if self.successes is not False:
+                            total = 0
+                            for t in tempresults:
+                                total += t
+
+                    self.results.append((r[1], tempresults, total))
         self.final = arithmeticEval(self.string)
