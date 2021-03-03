@@ -165,7 +165,6 @@ class Roll():
         self.die = DiceGroup(self.string)
         self.rolls = []
         self.results = []
-        self.successes = False
         if self.die.dice:
             # If there are actual dice in the roll, then do this
             for d in self.die.dice:
@@ -175,21 +174,27 @@ class Roll():
                 # This is here to basically turn all the rolls into usable stuff and then output it
                 # in a way that actually makes sense
                 tempstring = re.compile(rf"{r[1]}")
+                r_dict = {
+                    'string': None,
+                    'results': None,
+                    'total': None,
+                    'successes': False
+                }
                 if r[0]:
-                    total = r[0][1]
-                    tempresults = r[0][0]
+                    r_dict['total'] = r[0][1]
+                    r_dict['results'] = r[0][0]
                     self.string = tempstring.sub(f"{r[0][1]}", self.string)
                     if r[2].ops:
                         for o in self.op_collection(r[2]):
-                            tempresults = self.op_evaluate(r[2], o, tempresults)
+                            r_dict['results'] = self.op_evaluate(r[2], o, r_dict['results'])
                             if o[0] is Successes:
-                                self.successes = True
-                                total = False
+                                r_dict['successes'] = True
+                                r_dict['total'] = False
                                 break
-                        if self.successes is not False:
-                            total = 0
-                            for t in tempresults:
-                                total += t
+                        if r_dict['successes'] is False:
+                            r_dict['total'] = 0
+                            for t in r_dict['results']:
+                                r_dict['total'] += t
 
-                    self.results.append((r[1], tempresults, total))
+                    self.results.append(r_dict)
         self.final = arithmeticEval(self.string)

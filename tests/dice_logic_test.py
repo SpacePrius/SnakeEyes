@@ -65,6 +65,7 @@ class TestMath():
         """
         return snakeeyes.Roll("(1d20+5)*20")
 
+
 class TestMultiDice():
     @staticmethod
     def test_add():
@@ -74,6 +75,7 @@ class TestMultiDice():
         Args:
         """
         return snakeeyes.Roll("1d6+2d10")
+
     @staticmethod
     def test_subtract():
         """
@@ -82,6 +84,7 @@ class TestMultiDice():
         Args:
         """
         return snakeeyes.Roll("3d20-6d20")
+
     @staticmethod
     def test_divide():
         """
@@ -90,6 +93,7 @@ class TestMultiDice():
         Args:
         """
         return snakeeyes.Roll("7d10/3d20")
+
     @staticmethod
     def test_mult():
         """
@@ -98,6 +102,7 @@ class TestMultiDice():
         Args:
         """
         return snakeeyes.Roll("3d20*2d10")
+
     @staticmethod
     def test_exp():
         """
@@ -106,14 +111,21 @@ class TestMultiDice():
         Args:
         """
         return snakeeyes.Roll("3d20x15*2d10x15")
+
     @staticmethod
     def test_succ():
         """
         Returns the test test suite.
-
         Args:
         """
         return snakeeyes.Roll("3d20>10+2d20>10")
+
+    @staticmethod
+    def test_multi_op():
+        """
+        Tests if operators work together
+        """
+        return snakeeyes.Roll('3d20x10>10')
 
 
 class TestOperators():
