@@ -195,6 +195,6 @@ class Roll():
                             for t in r_dict['results']:
                                 r_dict['total'] += t
                     self.results.append(r_dict)
-                    self.string = tempstring.sub(f"{r_dict['total']}", self.string)
+                    self.string = tempstring.sub(f"{r_dict['total']}", self.string, count=1)
 
         self.final = arithmeticEval(self.string)
