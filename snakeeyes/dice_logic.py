@@ -175,7 +175,7 @@ class Roll():
                 # in a way that actually makes sense
                 tempstring = re.compile(rf"{r[1]}")
                 r_dict = {
-                    'string': None,
+                    'string': r[1],
                     'results': None,
                     'total': None,
                     'successes': False
@@ -183,18 +183,18 @@ class Roll():
                 if r[0]:
                     r_dict['total'] = r[0][1]
                     r_dict['results'] = r[0][0]
-                    self.string = tempstring.sub(f"{r[0][1]}", self.string)
                     if r[2].ops:
                         for o in self.op_collection(r[2]):
                             r_dict['results'] = self.op_evaluate(r[2], o, r_dict['results'])
                             if o[0] is Successes:
                                 r_dict['successes'] = True
-                                r_dict['total'] = False
+                                r_dict['total'] = 0
                                 break
                         if r_dict['successes'] is False:
                             r_dict['total'] = 0
                             for t in r_dict['results']:
                                 r_dict['total'] += t
-
                     self.results.append(r_dict)
+                    self.string = tempstring.sub(f"{r_dict['total']}", self.string)
+
         self.final = arithmeticEval(self.string)
