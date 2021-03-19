@@ -13,7 +13,7 @@ import math
 import random
 import re
 import logging
-from .elements import DiceGroup, Exploding, Successes, Die, KeepHigh, KeepLow
+from .elements import DiceGroup, Exploding, Successes, Die, DropLowest, DropHighest
 
 import ast
 import operator
@@ -63,8 +63,8 @@ logger = logging.getLogger('snakeeyes.dicelogic')
 op_dict = {
     ">": Successes,
     "x": Exploding,
-    "kh": KeepHigh,
-    "kl": KeepLow
+    "dl": DropLowest,
+    "dh": DropHighest
 }
 
 

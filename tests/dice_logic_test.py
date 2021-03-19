@@ -148,7 +148,7 @@ class TestOperators():
         return snakeeyes.Roll("100d20x10")
 
     def test_high(self):
-        return snakeeyes.Roll("4d6kh3")
+        return snakeeyes.Roll("4d6dl3")
         
     def test_low(self):
-        return snakeeyes.Roll("4d6kl3")
+        return snakeeyes.Roll("4d6dh3")

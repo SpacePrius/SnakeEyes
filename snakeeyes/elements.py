@@ -70,8 +70,8 @@ class DiceGroup():
         List of dice rolled.
     """
     parsestring = re.compile(
-        r"(?P<quantity> \d* (?=d\d*)) d (?P<sides>\d*)(?:[x\>khl]\d*)*", re.X)
-    parseops = re.compile(r"(?P<operator>[x\>]|kh|kl) (?P<operands>\d*)", re.X)
+        r"(?P<quantity> \d* (?=d\d*)) d (?P<sides>\d*)(?:[x\>dlh]\d*)*", re.X)
+    parseops = re.compile(r"(?P<operator>[x\>]|dl|dh) (?P<operands>\d*)", re.X)
 
     def __init__(self, string: str):
         """
@@ -222,12 +222,12 @@ class Exploding(LeftHandOperator):
         return eval_results
 
 
-class KeepHigh(LeftHandOperator):
+class DropLowest(LeftHandOperator):
     """
     Takes a set of dice and returns the highest X of the set
     """
     priority = 1
-    char = r"kh"
+    char = r"dl"
 
     @classmethod
     def evaluate(cls, results: list, operand: int, die: Die):
@@ -248,12 +248,12 @@ class KeepHigh(LeftHandOperator):
         return temporary_results
 
 
-class KeepLow(LeftHandOperator):
+class DropHighest(LeftHandOperator):
     """
     Takes a set of dice and returns the highest X of the set
     """
     priority = 1
-    char = r"kl"
+    char = r"dh"
 
     @classmethod
     def evaluate(cls, results: list, operand: int, die: Die):
