@@ -146,3 +146,9 @@ class TestOperators():
             self: (todo): write your description
         """
         return snakeeyes.Roll("100d20x10")
+
+    def test_high(self):
+        return snakeeyes.Roll("4d6kh3")
+        
+    def test_low(self):
+        return snakeeyes.Roll("4d6kl3")

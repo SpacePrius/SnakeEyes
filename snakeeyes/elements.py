@@ -69,8 +69,9 @@ class DiceGroup():
     dice : list
         List of dice rolled.
     """
-    parsestring = re.compile(r"(?P<quantity> \d* (?=d\d*)) d (?P<sides>\d*)(?:[x\>]\d*)*", re.X)
-    parseops = re.compile(r"(?P<operator>[x\>]) (?P<operands>\d*)", re.X)
+    parsestring = re.compile(
+        r"(?P<quantity> \d* (?=d\d*)) d (?P<sides>\d*)(?:[x\>khl]\d*)*", re.X)
+    parseops = re.compile(r"(?P<operator>[x\>]|kh|kl) (?P<operands>\d*)", re.X)
 
     def __init__(self, string: str):
         """
@@ -189,7 +190,7 @@ class Exploding(LeftHandOperator):
     """
     Takes dice results, and if the value is greater than the threshold, rolls another die.
     """
-    priority = 1
+    priority = 2
     char = r"x"
 
     @classmethod
@@ -219,3 +220,55 @@ class Exploding(LeftHandOperator):
                     break
         logger.debug("Exploded dice: %s", str(eval_results))
         return eval_results
+
+
+class KeepHigh(LeftHandOperator):
+    """
+    Takes a set of dice and returns the highest X of the set
+    """
+    priority = 1
+    char = r"kh"
+
+    @classmethod
+    def evaluate(cls, results: list, operand: int, die: Die):
+        logger.debug("Evaluating Keep High!")
+        temporary_results = results
+        for o in range(operand):
+            lowest = None
+            for index, d in enumerate(temporary_results):
+                logger.debug("D is %i", d)
+                if lowest is None:
+                    lowest = index
+                    logger.debug("Initializing loop!")
+                    continue
+                if d < temporary_results[index]:
+                    lowest = index
+                    logger.debug("New lowest: %i", index)
+            temporary_results.pop(lowest)
+        return temporary_results
+
+
+class KeepLow(LeftHandOperator):
+    """
+    Takes a set of dice and returns the highest X of the set
+    """
+    priority = 1
+    char = r"kl"
+
+    @classmethod
+    def evaluate(cls, results: list, operand: int, die: Die):
+        logger.debug("Evaluating Keep High!")
+        temporary_results = results
+        for o in range(operand):
+            highest = None
+            for index, d in enumerate(temporary_results):
+                logger.debug("D is %i", d)
+                if highest is None:
+                    highest = index
+                    logger.debug("Initializing loop!")
+                    continue
+                if d > temporary_results[index]:
+                    highest = index
+                    logger.debug("New lowest: %i", index)
+            temporary_results.pop(highest)
+        return temporary_results

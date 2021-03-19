@@ -13,7 +13,7 @@ import math
 import random
 import re
 import logging
-from .elements import DiceGroup, Exploding, Successes, Die
+from .elements import DiceGroup, Exploding, Successes, Die, KeepHigh, KeepLow
 
 import ast
 import operator
@@ -63,6 +63,8 @@ logger = logging.getLogger('snakeeyes.dicelogic')
 op_dict = {
     ">": Successes,
     "x": Exploding,
+    "kh": KeepHigh,
+    "kl": KeepLow
 }
 
 
@@ -197,4 +199,5 @@ class Roll():
                     self.results.append(r_dict)
                     self.string = tempstring.sub(f"{r_dict['total']}", self.string, count=1)
 
+        logger.debug(self.string)
         self.final = arithmeticEval(self.string)
