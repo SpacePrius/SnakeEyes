@@ -7,7 +7,7 @@ Classes
 - Die
 - Operator
     - LeftHandOperator
-        - Successes
+        - GreaterThan
         - Exploding
 
 """
@@ -70,8 +70,8 @@ class DiceGroup():
         List of dice rolled.
     """
     parsestring = re.compile(
-        r"(?P<quantity> \d* (?=d\d*)) d (?P<sides>\d*)(?:[x\>dlh]\d*)*", re.X)
-    parseops = re.compile(r"(?P<operator>[x\>]|dl|dh) (?P<operands>\d*)", re.X)
+        r"(?P<quantity> \d* (?=d\d*)) d (?P<sides>\d*)(?:[x\>\<dlh]\d*)*", re.X)
+    parseops = re.compile(r"(?P<operator>[x\>\<]|dl|dh) (?P<operands>\d*)", re.X)
 
     def __init__(self, string: str):
         """
@@ -159,8 +159,8 @@ class LeftHandOperator(Operator):
     operand = r"\d*"
 
 
-class Successes(LeftHandOperator):
-    """Takes an operand and calculates how many successes there have been."""
+class GreaterThan(LeftHandOperator):
+    """Takes an operand and calculates how many die greater than the targetthere have been."""
     priority = 7
     char = r"\>"
 
@@ -172,11 +172,11 @@ class Successes(LeftHandOperator):
         Args:
             cls: (callable): The Class
             results: (list): List of Results.
-            operand: (int): The threshold after which die count as successes.
+            operand: (int): The threshold after which die count as success.
             die: (Die): The Die roll.
         """
         dice_list = []
-        logger.debug("Evaluating successes!")
+        logger.debug("Evaluating GreaterThan!")
         for d in results:
             if d > int(operand):
                 dice_list.append((d, True))
@@ -185,6 +185,31 @@ class Successes(LeftHandOperator):
 
         return dice_list
 
+class LessThan(LeftHandOperator):
+    """Takes an operand and calculates how many die less than the target there have been."""
+    priority = 7
+    char = r"\<"
+
+    @classmethod
+    def evaluate(cls, results: list, operand: int, die: Die):
+        """
+        Evaluate a list of results.
+
+        Args:
+            cls: (callable): The Class
+            results: (list): List of Results.
+            operand: (int): The threshold after which die count as success.
+            die: (Die): The Die roll.
+        """
+        dice_list = []
+        logger.debug("Evaluating LessThan!")
+        for d in results:
+            if d < int(operand):
+                dice_list.append((d, True))
+            else:
+                dice_list.append((d, False))
+
+        return dice_list
 
 class Exploding(LeftHandOperator):
     """

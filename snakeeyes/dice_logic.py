@@ -13,7 +13,7 @@ import math
 import random
 import re
 import logging
-from .elements import DiceGroup, Exploding, Successes, Die, DropLowest, DropHighest
+from .elements import DiceGroup, Exploding, GreaterThan, Die, DropLowest, DropHighest, LessThan
 
 import ast
 import operator
@@ -61,10 +61,11 @@ logger = logging.getLogger('snakeeyes.dicelogic')
 
 
 op_dict = {
-    ">": Successes,
+    ">": GreaterThan,
     "x": Exploding,
     "dl": DropLowest,
-    "dh": DropHighest
+    "dh": DropHighest,
+    "<": LessThan
 }
 
 
@@ -140,7 +141,7 @@ class Roll():
         for o in die.ops:
             try:
                 operator = op_dict[o[0]]
-                op = (operator, o[1])
+                op = (operator, o[1], o[0])
                 oper.append(op)
             except KeyError:
                 continue
@@ -171,6 +172,7 @@ class Roll():
             # If there are actual dice in the roll, then do this
             for d in self.die.dice:
                 r = roll(d)
+                # 0 is results. 1 is the string of the die 2. is the die object.
                 self.rolls.append((r, d.string, d))
             for r in self.rolls:
                 # This is here to basically turn all the rolls into usable stuff and then output it
@@ -180,7 +182,7 @@ class Roll():
                     'string': r[1],
                     'results': None,
                     'total': None,
-                    'successes': False
+                    'Successes': False
                 }
                 if r[0]:
                     r_dict['total'] = r[0][1]
@@ -188,11 +190,11 @@ class Roll():
                     if r[2].ops:
                         for o in self.op_collection(r[2]):
                             r_dict['results'] = self.op_evaluate(r[2], o, r_dict['results'])
-                            if o[0] is Successes:
-                                r_dict['successes'] = True
+                            if o[0] is GreaterThan or LessThan:
+                                r_dict['Successes'] = True
                                 r_dict['total'] = 0
                                 break
-                        if r_dict['successes'] is False:
+                        if r_dict['Successes'] is False:
                             r_dict['total'] = 0
                             for t in r_dict['results']:
                                 r_dict['total'] += t

@@ -129,14 +129,17 @@ class TestMultiDice():
 
 
 class TestOperators():
-    def test_success(self):
+    def test_greaterthan(self):
         """
         Return the test test.
 
         Args:
             self: (todo): write your description
         """
-        return snakeeyes.Roll("1d20>5")
+        roll1 = snakeeyes.Roll("1d20>1")
+        assert roll1.results[0]['results'][0][1] is True
+        roll2 = snakeeyes.Roll("1d20>20")
+        assert roll2.results[0]['results'][0][1] is False
 
     def test_explode(self):
         """
@@ -152,3 +155,9 @@ class TestOperators():
         
     def test_low(self):
         return snakeeyes.Roll("4d6dh3")
+    
+    def test_lessthan(self):
+        roll1 = snakeeyes.Roll("1d20<1")
+        assert roll1.results[0]['results'][0][1] is False
+        roll2 = snakeeyes.Roll("1d20<20")
+        assert roll2.results[0]['results'][0][1] is True
