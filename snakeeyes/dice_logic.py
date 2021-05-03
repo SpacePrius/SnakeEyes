@@ -182,7 +182,7 @@ class Roll():
                     'string': r[1],
                     'results': None,
                     'total': None,
-                    'Successes': False
+                    'successes': False
                 }
                 if r[0]:
                     r_dict['total'] = r[0][1]
@@ -191,10 +191,10 @@ class Roll():
                         for o in self.op_collection(r[2]):
                             r_dict['results'] = self.op_evaluate(r[2], o, r_dict['results'])
                             if o[0] is GreaterThan or LessThan:
-                                r_dict['Successes'] = True
+                                r_dict['successes'] = True
                                 r_dict['total'] = 0
                                 break
-                        if r_dict['Successes'] is False:
+                        if r_dict['successes'] is False:
                             r_dict['total'] = 0
                             for t in r_dict['results']:
                                 r_dict['total'] += t
