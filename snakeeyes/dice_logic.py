@@ -107,7 +107,7 @@ class Roll():
         dictionary containing the characters of an operator, and the assosciated class
     die : elements.Die
         Dice roll using string input
-    results : list of int
+    results : list of dict
         List of results from dice rolled
     total : int
         The total of all dice rolled
@@ -178,6 +178,7 @@ class Roll():
                 # This is here to basically turn all the rolls into usable stuff and then output it
                 # in a way that actually makes sense
                 tempstring = re.compile(rf"{r[1]}")
+                #dictionary to store data about the roll itself
                 r_dict = {
                     'string': r[1],
                     'results': None,
@@ -188,6 +189,7 @@ class Roll():
                     r_dict['total'] = r[0][1]
                     r_dict['results'] = r[0][0]
                     if r[2].ops:
+                        #Process operators
                         for o in self.op_collection(r[2]):
                             r_dict['results'] = self.op_evaluate(r[2], o, r_dict['results'])
                             if o[0] is GreaterThan or LessThan:

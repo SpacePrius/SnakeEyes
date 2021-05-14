@@ -64,6 +64,15 @@ class TestMath():
             self: (todo): write your description
         """
         return snakeeyes.Roll("(1d20+5)*20")
+    def test_nodie(self):
+        add = snakeeyes.Roll("15+5")
+        assert add.final == 20
+        mult = snakeeyes.Roll("20*5")
+        assert mult.final == 100
+        div = snakeeyes.Roll("10/2")
+        assert div.final == 5
+        sub = snakeeyes.Roll("25-5")
+        assert sub.final == 20
 
 
 class TestMultiDice():
@@ -136,7 +145,7 @@ class TestOperators():
         Args:
             self: (todo): write your description
         """
-        roll1 = snakeeyes.Roll("1d20>1")
+        roll1 = snakeeyes.Roll("1d20>0")
         assert roll1.results[0]['results'][0][1] is True
         roll2 = snakeeyes.Roll("1d20>20")
         assert roll2.results[0]['results'][0][1] is False
@@ -157,7 +166,7 @@ class TestOperators():
         return snakeeyes.Roll("4d6dh3")
     
     def test_lessthan(self):
-        roll1 = snakeeyes.Roll("1d20<1")
+        roll1 = snakeeyes.Roll("1d20<0")
         assert roll1.results[0]['results'][0][1] is False
         roll2 = snakeeyes.Roll("1d20<20")
         assert roll2.results[0]['results'][0][1] is True
