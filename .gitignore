@@ -147,3 +147,9 @@ snakeeyesvenv/share/jupyter/kernels/python3/logo-32x32.png
 snakeeyesvenv/share/jupyter/kernels/python3/logo-64x64.png
 
 snakeeyesvenv/share/man/man1/ipython.1.gz
+
+cov.xml
+
+snakeeyes/test_localsystem.txt
+
+test_localsystem.txt

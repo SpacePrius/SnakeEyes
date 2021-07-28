@@ -71,7 +71,8 @@ class DiceGroup():
     """
     parsestring = re.compile(
         r"(?P<quantity> \d* (?=d\d*)) d (?P<sides>\d*)(?:[x\>\<dlh]\d*)*", re.X)
-    parseops = re.compile(r"(?P<operator>[x\>\<]|dl|dh) (?P<operands>\d*)", re.X)
+    parseops = re.compile(
+        r"(?P<operator>[x\>\<]|dl|dh) (?P<operands>\d*)", re.X)
 
     def __init__(self, string: str):
         """
@@ -113,6 +114,25 @@ class DiceGroup():
             logger.debug("Die is true")
             return True
         return False
+
+
+class Result():
+    is_successful = False
+    is_exploded = False
+
+    def __init__(self, value):
+        self.value = value
+
+
+class RollResult():
+    """Results of an operation
+    """
+
+    def __init__(self, roll: Result, total: int, dice_string: str, die: Die):
+        self.rolls = roll
+        self.total = total
+        self.dice_string = dice_string
+        self.die = die
 
 
 class Operator():
@@ -165,7 +185,7 @@ class GreaterThan(LeftHandOperator):
     char = r"\>"
 
     @classmethod
-    def evaluate(cls, results: list, operand: int, die: Die):
+    def evaluate(cls, roll: list, operand: int, die: Die):
         """
         Evaluate a list of results.
 
@@ -175,15 +195,11 @@ class GreaterThan(LeftHandOperator):
             operand: (int): The threshold after which die count as success.
             die: (Die): The Die roll.
         """
-        dice_list = []
         logger.debug("Evaluating GreaterThan!")
-        for d in results:
-            if d > int(operand):
-                dice_list.append((d, True))
-            else:
-                dice_list.append((d, False))
+        for d in roll.rolls:
+            if d.value > int(operand):
+                d.is_successful = True
 
-        return dice_list
 
 class LessThan(LeftHandOperator):
     """Takes an operand and calculates how many die less than the target there have been."""
@@ -191,7 +207,7 @@ class LessThan(LeftHandOperator):
     char = r"\<"
 
     @classmethod
-    def evaluate(cls, results: list, operand: int, die: Die):
+    def evaluate(cls, roll: RollResult, operand: int, die: Die):
         """
         Evaluate a list of results.
 
@@ -201,15 +217,11 @@ class LessThan(LeftHandOperator):
             operand: (int): The threshold after which die count as success.
             die: (Die): The Die roll.
         """
-        dice_list = []
         logger.debug("Evaluating LessThan!")
-        for d in results:
-            if d < int(operand):
-                dice_list.append((d, True))
-            else:
-                dice_list.append((d, False))
+        for d in roll.rolls:
+            if d.value < int(operand):
+                d.is_successful = True
 
-        return dice_list
 
 class Exploding(LeftHandOperator):
     """
@@ -219,7 +231,7 @@ class Exploding(LeftHandOperator):
     char = r"x"
 
     @classmethod
-    def evaluate(cls, results: list, operand: int, die: Die):
+    def evaluate(cls, roll: RollResult, operand: int, die: Die):
         """
         Evaluate the objective function.
 
@@ -229,22 +241,18 @@ class Exploding(LeftHandOperator):
             operand: (int): The threshold at which the die is rerolled
             die: (Die): The Die being rolled
         """
-        eval_results = results
-        logger.debug("Evaluating Exploding!")
-        for d in results:
-            logger.debug("D is: %i", d)
-            r = d
-            logger.debug("Operand: %i", operand)
-            while r >= operand:
-                logger.debug("Exploded!")
-                temp_roll = math.ceil(random.random() * die.sides)
-                r = temp_roll
-                logger.debug(" R is %i", r)
-                eval_results.append(temp_roll)
-                if r >= operand:
-                    break
-        logger.debug("Exploded dice: %s", str(eval_results))
-        return eval_results
+        eval_results = []
+        for d in roll.rolls:
+            if d.value >= operand:
+                math.ceil(random.random() * die.sides)
+                new_roll = Result(math.ceil(random.random() * die.sides))
+                d.is_exploded = True
+                eval_results.append(d)
+                eval_results.append(new_roll)
+                continue
+            else:
+                eval_results.append(d)
+        roll.rolls = eval_results
 
 
 class DropLowest(LeftHandOperator):
@@ -255,22 +263,22 @@ class DropLowest(LeftHandOperator):
     char = r"dl"
 
     @classmethod
-    def evaluate(cls, results: list, operand: int, die: Die):
+    def evaluate(cls, roll: RollResult, operand: int, die: Die):
         logger.debug("Evaluating Keep High!")
-        temporary_results = results
+        temporary_results = roll.rolls
         for o in range(operand):
             lowest = None
             for index, d in enumerate(temporary_results):
-                logger.debug("D is %i", d)
+                logger.debug("D is %i", d.value)
                 if lowest is None:
                     lowest = index
                     logger.debug("Initializing loop!")
                     continue
-                if d < temporary_results[index]:
+                if d.value < temporary_results[index].value:
                     lowest = index
                     logger.debug("New lowest: %i", index)
             temporary_results.pop(lowest)
-        return temporary_results
+        roll.rolls = temporary_results
 
 
 class DropHighest(LeftHandOperator):
@@ -281,19 +289,19 @@ class DropHighest(LeftHandOperator):
     char = r"dh"
 
     @classmethod
-    def evaluate(cls, results: list, operand: int, die: Die):
+    def evaluate(cls, roll: RollResult, operand: int, die: Die):
         logger.debug("Evaluating Keep High!")
-        temporary_results = results
+        temporary_results = roll.rolls
         for o in range(operand):
             highest = None
             for index, d in enumerate(temporary_results):
-                logger.debug("D is %i", d)
+                logger.debug("D is %i", d.value)
                 if highest is None:
                     highest = index
                     logger.debug("Initializing loop!")
                     continue
-                if d > temporary_results[index]:
+                if d.value > temporary_results[index].value:
                     highest = index
-                    logger.debug("New lowest: %i", index)
+                    logger.debug("New highest: %i", index)
             temporary_results.pop(highest)
-        return temporary_results
+        roll.rolls = temporary_results

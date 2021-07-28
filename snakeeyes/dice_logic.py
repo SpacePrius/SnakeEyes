@@ -13,7 +13,7 @@ import math
 import random
 import re
 import logging
-from .elements import DiceGroup, Exploding, GreaterThan, Die, DropLowest, DropHighest, LessThan
+from .elements import DiceGroup, Exploding, GreaterThan, Die, DropLowest, DropHighest, LessThan, Result, RollResult
 
 import ast
 import operator
@@ -78,13 +78,14 @@ def roll(die: Die):
 
     die : elements.Die
     """
+
     if die:
         dice_array = []
         for i in range(die.quantity):
-            dice_array.append(math.ceil(random.random() * die.sides))
+            dice_array.append(Result(math.ceil(random.random() * die.sides)))
         dice_total = 0
         for r in dice_array:
-            dice_total += r
+            dice_total += r.value
         return (dice_array, dice_total)
     else:
         return False
@@ -107,7 +108,7 @@ class Roll():
         dictionary containing the characters of an operator, and the assosciated class
     die : elements.Die
         Dice roll using string input
-    results : list of dict
+    results : list of int
         List of results from dice rolled
     total : int
         The total of all dice rolled
@@ -149,11 +150,9 @@ class Roll():
         return oper
 
     @staticmethod
-    def op_evaluate(die: Die, ops: list, results: list):
+    def op_evaluate(roll: RollResult, die: Die, ops: list):
         """Take results and operators and return a final result."""
-        last_output = results
-        last_output = ops[0].evaluate(last_output, ops[1], die)
-        return last_output
+        ops[0].evaluate(roll, ops[1], die)
 
     def __init__(self, string: str):
         """
@@ -173,35 +172,18 @@ class Roll():
             for d in self.die.dice:
                 r = roll(d)
                 # 0 is results. 1 is the string of the die 2. is the die object.
-                self.rolls.append((r, d.string, d))
+                self.rolls.append(RollResult(r[0], r[1], d.string, d))
             for r in self.rolls:
-                # This is here to basically turn all the rolls into usable stuff and then output it
-                # in a way that actually makes sense
-                tempstring = re.compile(rf"{r[1]}")
-                #dictionary to store data about the roll itself
-                r_dict = {
-                    'string': r[1],
-                    'results': None,
-                    'total': None,
-                    'successes': False
-                }
-                if r[0]:
-                    r_dict['total'] = r[0][1]
-                    r_dict['results'] = r[0][0]
-                    if r[2].ops:
-                        #Process operators
-                        for o in self.op_collection(r[2]):
-                            r_dict['results'] = self.op_evaluate(r[2], o, r_dict['results'])
-                            if o[0] is GreaterThan or LessThan:
-                                r_dict['successes'] = True
-                                r_dict['total'] = 0
-                                break
-                        if r_dict['successes'] is False:
-                            r_dict['total'] = 0
-                            for t in r_dict['results']:
-                                r_dict['total'] += t
-                    self.results.append(r_dict)
-                    self.string = tempstring.sub(f"{r_dict['total']}", self.string, count=1)
+                tempstring = re.compile(f"{r.dice_string}")
+                if r.rolls:
+                    if r.die.ops:
+                        for o in self.op_collection(r.die):
+                            self.op_evaluate(r, r.die, o)
+                        r.total = 0
+                        for v in r.rolls:
+                            r.total += v.value
+                self.string = tempstring.sub(
+                    f"{r.total}", self.string, count=1)
 
         logger.debug(self.string)
         self.final = arithmeticEval(self.string)

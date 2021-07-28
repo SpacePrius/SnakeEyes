@@ -54,7 +54,7 @@ class TestMath():
         Args:
             self: (todo): write your description
         """
-        return snakeeyes.Roll("25*3")
+        assert int(snakeeyes.Roll("5*3").final) == 5 * 3
 
     def test_parenth(self):
         """
@@ -119,7 +119,9 @@ class TestMultiDice():
 
         Args:
         """
-        return snakeeyes.Roll("3d20x15*2d10x15")
+        roll = snakeeyes.Roll("3d20x15*2d10x15")
+
+        return roll
 
     @staticmethod
     def test_succ():
@@ -134,7 +136,8 @@ class TestMultiDice():
         """
         Tests if operators work together
         """
-        return snakeeyes.Roll('3d20x10>10')
+        roll = snakeeyes.Roll('3d20x10>10')
+        return roll
 
 
 class TestOperators():
@@ -146,9 +149,9 @@ class TestOperators():
             self: (todo): write your description
         """
         roll1 = snakeeyes.Roll("1d20>0")
-        assert roll1.results[0]['results'][0][1] is True
+        assert roll1.rolls[0].rolls[0].is_successful is True
         roll2 = snakeeyes.Roll("1d20>20")
-        assert roll2.results[0]['results'][0][1] is False
+        assert roll2.rolls[0].rolls[0].is_successful is False
 
     def test_explode(self):
         """
@@ -167,6 +170,6 @@ class TestOperators():
     
     def test_lessthan(self):
         roll1 = snakeeyes.Roll("1d20<0")
-        assert roll1.results[0]['results'][0][1] is False
+        assert roll1.rolls[0].rolls[0].is_successful is False
         roll2 = snakeeyes.Roll("1d20<20")
-        assert roll2.results[0]['results'][0][1] is True
+        assert roll2.rolls[0].rolls[0].is_successful is True
