@@ -243,15 +243,21 @@ class Exploding(LeftHandOperator):
         """
         eval_results = []
         for d in roll.rolls:
-            if d.value >= operand:
-                math.ceil(random.random() * die.sides)
-                new_roll = Result(math.ceil(random.random() * die.sides))
+            value = d.value
+            if value >= operand:
                 d.is_exploded = True
+                new_roll = d
                 eval_results.append(d)
-                eval_results.append(new_roll)
+                while new_roll.value >= operand:
+                    # math.ceil(random.random() * die.sides)
+                    new_roll = Result(math.ceil(random.random() * die.sides))
+                    if new_roll.value >= operand:
+                        new_roll.is_exploded = True
+                    eval_results.append(new_roll)
                 continue
             else:
                 eval_results.append(d)
+
         roll.rolls = eval_results
 
 
