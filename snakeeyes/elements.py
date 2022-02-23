@@ -280,9 +280,10 @@ class DropLowest(LeftHandOperator):
                     lowest = index
                     logger.debug("Initializing loop!")
                     continue
-                if d.value < temporary_results[index].value:
+                if d.value < temporary_results[lowest].value:
                     lowest = index
                     logger.debug("New lowest: %i", index)
+            logger.debug("Dropped: %i", temporary_results[lowest].value)
             temporary_results.pop(lowest)
         roll.rolls = temporary_results
 
@@ -306,8 +307,10 @@ class DropHighest(LeftHandOperator):
                     highest = index
                     logger.debug("Initializing loop!")
                     continue
-                if d.value > temporary_results[index].value:
+                if d.value > temporary_results[highest].value:
                     highest = index
-                    logger.debug("New highest: %i", index)
+                    logger.debug("New highest: %i", d.value)
+            logger.debug("Dropped: %i", temporary_results[highest].value)
             temporary_results.pop(highest)
+
         roll.rolls = temporary_results
