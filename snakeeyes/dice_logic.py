@@ -13,7 +13,7 @@ import math
 import random
 import re
 import logging
-from .elements import DiceGroup, Exploding, GreaterThan, Die, DropLowest, DropHighest, LessThan, Result, RollResult
+from .elements import DiceGroup, Exploding, GreaterThan, Die, DropLowest, DropHighest, LessThan, Result, RollResult, CombatDie, CombatResult
 
 import ast
 import operator
@@ -82,7 +82,10 @@ def roll(die: Die):
     if die:
         dice_array = []
         for i in range(die.quantity):
-            dice_array.append(Result(math.ceil(random.random() * die.sides)))
+            if isinstance(die, CombatDie):
+                dice_array.append(CombatResult(math.ceil(random.random() * die.sides), die.value))
+            else:
+                dice_array.append(Result(math.ceil(random.random() * die.sides)))
         dice_total = 0
         for r in dice_array:
             dice_total += r.value
@@ -175,7 +178,7 @@ class Roll():
                 self.rolls.append(RollResult(r[0], r[1], d.string, d))
             for r in self.rolls:
                 tempstring = re.compile(f"{r.dice_string}")
-                if r.rolls:
+                if r.roll:
                     if r.die.ops:
                         for o in self.op_collection(r.die):
                             self.op_evaluate(r, r.die, o)

@@ -58,6 +58,11 @@ class Die():
         except (ValueError, AttributeError):
             pass
 
+class CombatDie(Die):
+    sides = 6
+    def __init__(self, quantity: int, string: str, value: int, sides=6, opslist=[]):
+        Die.__init__(self, quantity, sides, opslist, string)
+        self.value = value
 
 class DiceGroup():
     """Class that handles dice rolls using regular expressions.
@@ -73,6 +78,8 @@ class DiceGroup():
         r"(?P<quantity> \d* (?=d\d*)) d (?P<sides>\d*)(?:[x\>\<dlh]\d*)*", re.X)
     parseops = re.compile(
         r"(?P<operator>[x\>\<]|dl|dh) (?P<operands>\d*)", re.X)
+    parsecombat = re.compile(
+        r"(?P<quantity> \d* (?c)) c (?P<value>\d*)", re.X)
 
     def __init__(self, string: str):
         """
@@ -85,7 +92,9 @@ class DiceGroup():
         self.string = string
         logger.debug("String: %s", self.string)
         __dice = self.parsestring.finditer(string)
+        __combat_dice = self.parsecombat.finditer(string)
         self.dice = []
+        self.combatdice = []
         for d in __dice:
             # Intiialize the dice
             quant = int(d.group('quantity'))
@@ -101,6 +110,13 @@ class DiceGroup():
             self.dice.append(dicestring)
 
             logger.debug(f"Oplist: {opslist}")
+        for c in __combat_dice:
+            quant = int(c.group('quantity'))
+            value = int(c.group('value'))
+            cstring = c.group()
+            cdicestring = CombatDie(quant, cstring, value)
+            self.combatdice.append(cdicestring)
+
         logger.debug(f"Dice: {self.dice}")
 
     def __bool__(self):
@@ -115,7 +131,6 @@ class DiceGroup():
             return True
         return False
 
-
 class Result():
     is_successful = False
     is_exploded = False
@@ -123,6 +138,29 @@ class Result():
     def __init__(self, value):
         self.value = value
 
+class CombatResult(Result):
+    is_blank = False
+    is_crit = False
+
+    def __init__(self, value, effect):
+        match value:
+            case 1:
+                self.value = 1
+            case 2:
+                self.value = 2
+            case 3:
+                 self.value = 0
+                 self.is_blank = True
+            case 4:
+                self.value = 0
+                self.is_blank = True
+            case 5: 
+                self.value = 0
+                self.is_blank = True
+            case 6:
+                self.value = effect
+                self.is_crit = True
+            
 
 class RollResult():
     """Results of an operation
