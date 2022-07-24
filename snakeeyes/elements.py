@@ -144,6 +144,7 @@ class CombatResult(Result):
 
     def __init__(self, value, effect):
         self.value = 0
+        self.rvalue = value
         match value:
             case 1:
                 self.value = 1
