@@ -1,9 +1,9 @@
 language: python
 python:
-  - "3.6"
   - "3.7"
   - "3.8"
   - "3.9"
+  - "3.10"
 env:
   - CODACY_PROJECT_TOKEN=066ab3574e79454188d5c0cd472136dd
 install:
