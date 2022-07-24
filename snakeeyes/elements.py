@@ -79,7 +79,7 @@ class DiceGroup():
     parseops = re.compile(
         r"(?P<operator>[x\>\<]|dl|dh) (?P<operands>\d*)", re.X)
     parsecombat = re.compile(
-        r"(?P<quantity> \d* (?c)) c (?P<value>\d*)", re.X)
+        r"(?P<quantity> \d* (?=c)) c (?P<value>\d*)", re.X)
 
     def __init__(self, string: str):
         """
@@ -143,14 +143,15 @@ class CombatResult(Result):
     is_crit = False
 
     def __init__(self, value, effect):
+        self.value = 0
         match value:
             case 1:
                 self.value = 1
             case 2:
                 self.value = 2
             case 3:
-                 self.value = 0
-                 self.is_blank = True
+                self.value = 0
+                self.is_blank = True
             case 4:
                 self.value = 0
                 self.is_blank = True
