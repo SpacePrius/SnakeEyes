@@ -125,7 +125,7 @@ class Roll():
 
     """
 
-    dice_regex = re.compile(r"\d*d\d*(?:[^d\d\(\)+\-\*/]\d*)*")
+    dice_regex = re.compile(r"\d*d?c?\d*(?:[^d\d\(\)+\-\*/c]\d*)*")
     math_regex = re.compile(r"[\(\)+*-\/\d]+")
 
     @staticmethod
@@ -178,7 +178,7 @@ class Roll():
                 self.rolls.append(RollResult(r[0], r[1], d.string, d))
             for r in self.rolls:
                 tempstring = re.compile(f"{r.dice_string}")
-                if r.roll:
+                if r.rolls:
                     if r.die.ops:
                         for o in self.op_collection(r.die):
                             self.op_evaluate(r, r.die, o)

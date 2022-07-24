@@ -115,7 +115,7 @@ class DiceGroup():
             value = int(c.group('value'))
             cstring = c.group()
             cdicestring = CombatDie(quant, cstring, value)
-            self.combatdice.append(cdicestring)
+            self.dice.append(cdicestring)
 
         logger.debug(f"Dice: {self.dice}")
 
@@ -161,14 +161,15 @@ class CombatResult(Result):
             case 6:
                 self.value = effect
                 self.is_crit = True
+        logger.debug(f"Combat Dice value: {self.value}")
             
 
 class RollResult():
     """Results of an operation
     """
 
-    def __init__(self, roll: Result, total: int, dice_string: str, die: Die):
-        self.rolls = roll
+    def __init__(self, rolls: Result, total: int, dice_string: str, die: Die):
+        self.rolls = rolls
         self.total = total
         self.dice_string = dice_string
         self.die = die
