@@ -173,3 +173,7 @@ class TestOperators():
         assert roll1.rolls[0].rolls[0].is_successful is False
         roll2 = snakeeyes.Roll("1d20<21")
         assert roll2.rolls[0].rolls[0].is_successful is True
+
+class TestCombat():
+    def test_combat_dice(self):
+        return snakeeyes.Roll("3c5")
