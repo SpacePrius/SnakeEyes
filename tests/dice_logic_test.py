@@ -65,6 +65,12 @@ class TestMath():
         """
         return snakeeyes.Roll("(1d20+5)*20")
     def test_nodie(self):
+        """
+        Test that the final rolls are notdies.
+
+        Args:
+            self: write your description
+        """
         add = snakeeyes.Roll("15+5")
         assert add.final == 20
         mult = snakeeyes.Roll("20*5")
@@ -163,12 +169,30 @@ class TestOperators():
         return snakeeyes.Roll("100d20x10")
 
     def test_high(self):
+        """
+        Test for highness.
+
+        Args:
+            self: write your description
+        """
         return snakeeyes.Roll("4d6dl3")
         
     def test_low(self):
+        """
+        Test low - pass roll.
+
+        Args:
+            self: write your description
+        """
         return snakeeyes.Roll("4d6dh3")
     
     def test_lessthan(self):
+        """
+        Test for success if the first roll is less than the second one.
+
+        Args:
+            self: write your description
+        """
         roll1 = snakeeyes.Roll("1d20<0")
         assert roll1.rolls[0].rolls[0].is_successful is False
         roll2 = snakeeyes.Roll("1d20<21")
@@ -176,4 +200,10 @@ class TestOperators():
 
 class TestCombat():
     def test_combat_dice(self):
+        """
+        Test for dice roll.
+
+        Args:
+            self: write your description
+        """
         return snakeeyes.Roll("3c5")
