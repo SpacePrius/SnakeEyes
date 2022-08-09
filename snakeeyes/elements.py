@@ -61,6 +61,17 @@ class Die():
 class CombatDie(Die):
     sides = 6
     def __init__(self, quantity: int, string: str, value: int, sides=6, opslist=[]):
+        """
+        Initialize Die object.
+
+        Args:
+            self: write your description
+            quantity: write your description
+            string: write your description
+            value: write your description
+            sides: write your description
+            opslist: write your description
+        """
         Die.__init__(self, quantity, sides, opslist, string)
         self.value = value
 
@@ -136,6 +147,13 @@ class Result():
     is_exploded = False
 
     def __init__(self, value):
+        """
+        Initializes the instance with the given value.
+
+        Args:
+            self: write your description
+            value: write your description
+        """
         self.value = value
 
 class CombatResult(Result):
@@ -143,6 +161,14 @@ class CombatResult(Result):
     is_crit = False
 
     def __init__(self, value, effect):
+        """
+        Initialize the rule.
+
+        Args:
+            self: write your description
+            value: write your description
+            effect: write your description
+        """
         self.value = 0
         self.rvalue = value
         match value:
@@ -170,6 +196,16 @@ class RollResult():
     """
 
     def __init__(self, rolls: Result, total: int, dice_string: str, die: Die):
+        """
+        Initializes rolls and dice string.
+
+        Args:
+            self: write your description
+            rolls: write your description
+            total: write your description
+            dice_string: write your description
+            die: write your description
+        """
         self.rolls = rolls
         self.total = total
         self.dice_string = dice_string
@@ -311,6 +347,15 @@ class DropLowest(LeftHandOperator):
 
     @classmethod
     def evaluate(cls, roll: RollResult, operand: int, die: Die):
+        """
+        Evaluate the roll operand and die.
+
+        Args:
+            cls: write your description
+            roll: write your description
+            operand: write your description
+            die: write your description
+        """
         logger.debug("Evaluating Keep High!")
         temporary_results = roll.rolls
         for o in range(operand):
@@ -338,6 +383,15 @@ class DropHighest(LeftHandOperator):
 
     @classmethod
     def evaluate(cls, roll: RollResult, operand: int, die: Die):
+        """
+        Evaluate the roll operand and die.
+
+        Args:
+            cls: write your description
+            roll: write your description
+            operand: write your description
+            die: write your description
+        """
         logger.debug("Evaluating Keep High!")
         temporary_results = roll.rolls
         for o in range(operand):
